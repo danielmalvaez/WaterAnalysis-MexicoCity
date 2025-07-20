@@ -84,3 +84,4 @@ Para llevar a cabo este análisis, se utilizarán diversas fuentes de datos, inc
 An eye now on : 
 * https://www.smithsonianmag.com/smart-news/mexico-citys-reservoirs-are-at-risk-of-running-out-of-water-180984433/?utm_source=chatgpt.com
 * https://realestatemarket.com.mx/noticias/mercado-inmobiliario/48609-el-mercado-inmobiliario-de-cdmx-enfrenta-escasez-y-presion-de-precios
+* https://blog.streamlit.io/crafting-a-dashboard-app-in-python-using-streamlit/
