@@ -72,3 +72,15 @@ Para llevar a cabo este análisis, se utilizarán diversas fuentes de datos, inc
 * Encuestas a residentes sobre la percepción del valor de las propiedades en relación con la disponibilidad de agua, realizadas en 2024.
 * Artículos académicos y reportes sobre el impacto de la escasez de agua en el mercado inmobiliario, incluyendo análisis de tendencias y patrones en diferentes ciudades del mundo.
 * Informes de organizaciones no gubernamentales y grupos de investigación sobre la crisis hídrica en Ciudad de México y su impacto en las comunidades y el desarrollo urbano.
+* https://cuentame.inegi.org.mx/descubre/conoce_tu_estado/tarjeta.html?estado=09
+* https://www.inegi.org.mx/contenidos/saladeprensa/boletines/2024/PIBEF/PIBEF2023.pdf
+* https://periodicocorreo.com.mx/nacional/2025/jul/01/sistema-cutzamala-supera-minimos-historicos-y-sale-de-crisis-hidrica-tras-intensas-lluvias-131693.html
+* https://www.smithsonianmag.com/smart-news/mexico-citys-reservoirs-are-at-risk-of-running-out-of-water-180984433/?utm_source=chatgpt.com
+* https://www.reuters.com/sustainability/boards-policy-regulation/mexicos-water-deficit-persists-even-after-torrential-summer-rains-2025-07-03/?utm_source=chatgpt.com
+* https://www.economia.gob.mx/datamexico/es/profile/geo/ciudad-de-mexico-cx?redirect=true&yearCensus1=year2019
+* https://www.economia.gob.mx/datamexico/es/profile/industry/real-estate-and-rental-and-leasing?yearEconomicCensus=option1&yearSelectorGdp=timeOption0#environment
+* https://www.economia.gob.mx/datamexico/es/profile/industry/construction
+
+An eye now on : 
+* https://www.smithsonianmag.com/smart-news/mexico-citys-reservoirs-are-at-risk-of-running-out-of-water-180984433/?utm_source=chatgpt.com
+* https://realestatemarket.com.mx/noticias/mercado-inmobiliario/48609-el-mercado-inmobiliario-de-cdmx-enfrenta-escasez-y-presion-de-precios
