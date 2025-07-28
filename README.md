@@ -1,11 +1,16 @@
-# Escasez de **Agua** y como impacta las decisiones al momento de adquirir/rentar una propiedad en Ciudad de México
+# Escasez de Agua 💧 y cómo impacta las decisiones al momento de adquirir/rentar una propiedad en Ciudad de México 🏙️
+
+Mi motivación principal ✨ sobre este proyecto es que nació como una petición de mis padres. Nos dimos cuenta que cada vez que buscábamos rentar o mudarnos de casa, nos gustaba saber no sólo el entorno social 🧑‍🤝‍🧑, la seguridad 🛡️, la cercanía con principales servicios 🏥🛒 o incluso con la familia 👨‍👩‍👧‍👦, sino también nos interesa conocer cuál es la situación del abastecimiento de agua en la colonia (e.g. hay tandas, el lugar tiene cisterna, tinaco, etc).
+
+Es por esto que, motivado por conocer la situación de la disponibilidad del agua en nuestro futuro hogar 🏠, decidí hacer este proyecto, el cual busca brindar una mayor visibilidad del problema actual en CDMX 🚰 y a su vez otorgar una herramienta 🧰 a todas aquellas personas que busquen cambiar de departamento, casa o vivienda, y así puedan tomar una decisión más informada 📊 (además de claro, generar conciencia sobre el uso responsable de este recurso tan preciado 🌎).
+
 
 Mi **motivación principal** sobre este proyecto es que nació como una petición de mis padres. Nos dimos cuenta que cada vez que buscabamos rentar o mudarnos de casa, nos gustaba saber no sólo el entorno social, la seguridad, la cercanía con principales servicios o incluso cercanía con la familia, sino también nos gusta saber cuál es la situación del abastecimiento de agua en la colonia (e.g. hay tandes, el lugar tiene cisterna, tinaco, etc). Es por esto que motivado por conocer la situación de la disponibilidad del agua en nuestro futuro hogar, decidí hacer este proyecto el cuál busca brindar una mayor visibilidad del problema actual en CDMX y a su vez otorgar una herramienta a todas aquellas personas que busquen cambiar de departamento, casa o vivienda y puedan tomar una decisión más informada (*además de claro generar conciencia sobre el uso responsable de este recurso tan preciado*).
 
-## Dashboard
+## 📊 Dashboard
 Este repositorio guarda el código y la implementación del [Dashboard](linktobedetermined) que presento en mi [Medium report](linktobedetermined).
 
-## Pre-requisitos
+## ⚙️ Pre-requisitos
 * Python libraries :
     * geopandas
     * plotly
@@ -13,11 +18,9 @@ Este repositorio guarda el código y la implementación del [Dashboard](linktobe
     * squarify
 
 
-# ¿Cómo usar el dashboard?
+## 🧭 ¿Cómo usar el dashboard?
 
-# 
-
-### **Data Sources & Support References**
+## **📚 Data Sources & Support References**
 
 * Comisión Nacional del Agua (CONAGUA). (2023). Informe sobre la disponibilidad de agua en Ciudad de México.
 * Instituto Nacional de Estadística y Geografía (INEGI). (2023). Estadísticas del mercado inmobiliario en Ciudad de México.
