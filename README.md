@@ -44,3 +44,4 @@ An eye now on :
 * https://realestatemarket.com.mx/noticias/mercado-inmobiliario/48609-el-mercado-inmobiliario-de-cdmx-enfrenta-escasez-y-presion-de-precios
 * https://blog.streamlit.io/crafting-a-dashboard-app-in-python-using-streamlit/
 * https://www.youtube.com/watch?v=yg0Y7w4AHhw
+* https://shields.io/

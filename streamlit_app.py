@@ -11,18 +11,31 @@ import json
 import unicodedata
 import warnings
 
-# Third-party imports.
-import geopandas as gpd
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-import seaborn as sns
-import squarify
+# Streamlit import
 import streamlit as st
-from scipy.spatial import cKDTree
+
+# --------------------
+# Third Party Imports
+# --------------------
+# Data management
+import pandas as pd
+import numpy as np
+import json
+# Treemap visualization
+import squarify
 from shapely.geometry import Point
+import seaborn as sns
+import plotly.graph_objects as go
+import matplotlib.pyplot as plt
+import plotly.express as px # Interactive
+from matplotlib import cm
+from matplotlib.colors import Normalize, to_hex
+# To make spatial data
+from scipy.spatial import cKDTree
+import geopandas as gpd
+# No accents
+import unicodedata
+# Provide a running estimate
 from tqdm import tqdm
 
 # Configure warnings to keep the output clean.
@@ -33,45 +46,29 @@ warnings.filterwarnings("ignore")
 # ------------------------------------------------------------------------------
 
 APP_TITLE = (
-    "Escasez de Agua 💧 y cómo impacta las decisiones al momento de "
-    "adquirir/rentar una propiedad en Ciudad de México 🏙️"
+    "El Futuro del Agua 💧 en la Ciudad de México 🇲🇽"
 )
 APP_VERSION = "v0.1.0"
-
-# WATER DATASETS
-
-# Data consumption during the whole 2019 by neighborhood
-watConsPath = "data/water/consumo/consumo_agua_historico_2019.csv"
-# Municipalities with drought data and higher/lower probability of drought
-droughtPath = "data/water/sequia/Municipios_con_ sequia.xlsx"
-# Water Reports in Mexico City by neighborhood.
-reports2224Path = "data/water/reportes/reportes_agua_2024_01.csv"
-reportsHistory = "data/water/reportes/reportes_agua_hist.csv"
-# Hidric feasibility
-hidFeasPath = "data/water/factibilidad/factibilidad-hdrica.json"
-# Consumption every two months by neighborhood
-habPath = ("data/water/consumo/consumo-habitacional-promedio-"
-           "bimestral-de-agua-por-colonia-m3.json")    
-
-# PROPERTY DATASETS
-
-# Index SHF for housing price in the area
-indexSHFPath = "data/property-population/SHF/indice_SHF.csv"
-# Population Growth Rate
-growthRateAlcPath = ("data/property-population/CrecimientoPoblacional/"
-                     "poblacion_total_tasa_crecimiento_alcaldia_1.2.csv3")
-# Density
-housesColPath = ("data/property-population/"
-                "Hogares por colonia/hogares_colonia.shp")
-# Concentración habitacional
-densityPath = "data/property-population/alta_concentracion/zonas_vivienda.shp"
+AUTHOR = "Daniel Malváez"
+URL = "https://www.linkedin.com/in/daniel-malvaez/"
 
 # ------------------------------------------------------------------------------
-# Reading & Preprocessing Data
+# Functions
 # ------------------------------------------------------------------------------
 
 @st.cache_data
 def load_data(path, ext = 'csv', sheet_name = ''):
+    """Function that loads information and stores in into the cache
+
+    Args:
+        path (str): internal path where the data or file is
+        ext (str, optional): type of file. Defaults to 'csv'.
+        sheet_name (str, optional): name of the sheet for excel files.
+                                    Defaults to ''.
+
+    Returns:
+        Object : DataFrame Object
+   """
     if ext == 'csv':
         return pd.read_csv(path)
     elif ext == 'xlsx' : 
@@ -80,60 +77,137 @@ def load_data(path, ext = 'csv', sheet_name = ''):
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
 
-# ---------------------
-# WATER DATA
-# ---------------------
-
-# Water Consumption 2019
-watCons19 = load_data(watConsPath,'csv')
-watCons19.drop_duplicates(inplace=True)
-
-# Drought MEX CITY
-drought = load_data(droughtPath, ext='xlsx',
-                    sheet_name='MONITOR - SEMAFORO - USO EFIC')
-cldCols = drought.columns.to_series().where(
-    ~drought.columns.str.contains('^Unnamed'), '')
-drought.columns = [x + '/' + y if x != '' else y 
-                    for x, y in zip(cldCols, drought.iloc[0].astype(str))]
-drought = drought.iloc[1:].reset_index().iloc[:,1:]
-
-# Water Reports in Mexico City by neighborhood.
-reports2224 = load_data(reports2224Path, ext='csv')
-reportsHist = load_data(reportsHistory,ext='csv')
-
-# Hidric feasibility
-factFeats = load_data(hidFeasPath, ext='json')
-fact = gpd.GeoDataFrame.from_features(factFeats["features"])
-
-# Consumption every two months by neighborhood
-habConsFeats = load_data(habPath, ext='json')
-habCons = gpd.GeoDataFrame.from_features(habConsFeats['features'])
-
-# ---------------------
-# PROPERTY DATA
-# ---------------------
-
-indexSHF = pd.read_csv(indexSHFPath, encoding='iso-8859-1', delimiter=';')
-data_tasa_crecimiento_alcaldia = pd.read_csv(growthRateAlcPath,encoding='utf-8')
-data_hogares_col = gpd.read_file(housesColPath)
-data_concentracion = gpd.read_file(densityPath)
-
-# ------------------------------------------------------------------------------
-# Functions
-# ------------------------------------------------------------------------------
-
-
-
 # ------------------------------------------------------------------------------
 # App
 # ------------------------------------------------------------------------------
 
 def main() -> None:
     """Run the Streamlit dashboard."""
-    st.set_page_config(layout="wide")
-    st.title(APP_TITLE)
-    st.markdown(f"_{APP_VERSION}_")        
+
+    st.set_page_config(
+        layout="wide",
+         page_title="Dashboard : Futuro del Agua en CDMX",
+        page_icon="🧊",    
+        initial_sidebar_state="expanded"
+        )
     
+    st.title(APP_TITLE)
+    
+    col1, col2 = st.columns([1, 4])  # adjust ratio for width
+
+    with col1:
+        st.markdown(
+            f"""
+            <p style="margin-bottom:0px;"><b>Info del proyecto</b></p>
+            <p style="margin-bottom:0px;">Version: <i>{APP_VERSION}</i></p>
+            <p style="margin-top:2px; margin-bottom:4px;">Author: <i>{AUTHOR}</i></p>
+            """,
+            unsafe_allow_html=True
+        )
+        st.markdown(
+            """
+            [![LinkedIn](https://img.shields.io/badge/LinkedIn-blue)](https://www.linkedin.com/in/daniel-malvaez/)
+            [![GitHub](https://img.shields.io/badge/GitHub-Repo-black?logo=github)](https://github.com/danielmalvaez/WaterAnalysis-MexicoCity)
+            """,
+            unsafe_allow_html=True
+        )
+
+    with col2:
+        st.markdown(
+            """
+            **Sobre el proyecto**  
+            Este dashboard muestra la situación de la escasez y disponibilidad de agua en la Ciudad de México, 
+            integrando datos de consumo, sequía, densidad poblacional y reportes como fugas.  
+            \n
+            El objetivo de este proyecto comenzó con un análisis de la situación 
+            del agua en la Ciudad de México y poder tomar una decisión más 
+            informada en cuando a dónde comprar/rentar una casa o departamento. 
+            Sin embargo, conforme fui realizando el análisis me di cuenta que 
+            el dashboard también funciona como una fuente para generar 
+            conciencia y ver como al paso de los años la creciente 
+            incertidumbre de si habrá agua disponible o no es cada vez más relevante.
+            """
+        )
+
+    # --------------------------------------------------------------------------
+    # LOADING DATA
+    # --------------------------------------------------------------------------
+    dataConsumo19 = load_data("../data/consumoAgua19.csv", "csv")
+    dataDrought = load_data("../data/droughtMexCity.csv", "csv")
+    dataFeasibility = load_data("../data/feasibilityMexCity.csv", "csv")
+    dataHogaresCol = load_data("../data/hogaresCol.csv", "csv")
+
+    # Consumption every two months by neighborhood
+    consPath = '../data/consumo-hab-promedio-bimestral-agua-por-colonia-m3.json'
+    dataCons = load_data(consPath, 'json')
+    habCons = gpd.GeoDataFrame.from_features(dataCons['features'])
+
+    dataIndexSHF = pd.read_csv("../data/indexSHF.csv")
+    dataReports = pd.read_csv("../data/reportsAllHist.csv")
+    density = pd.read_csv("../data/density.csv")
+    
+    # --------------------------------------------------------------------------
+    # ESCASEZ DEL AGUA (INTRODUCTION)
+    # --------------------------------------------------------------------------
+    # Aggregate data
+    t = dataDrought.groupby(by=['DATE',
+                                'MONTH',
+                                'YEAR'])['VALUE'].mean().reset_index()
+    t['DATE'] = pd.to_datetime(t['DATE'])
+    t_filtered = t[(t['DATE'] >= "2003-01-01") & (t['DATE'] <= "2023-12-31")]
+
+    # Create Plotly line plot
+    fig = px.line(
+        t_filtered,
+        x='DATE',
+        y='VALUE',
+        markers=True,
+        #labels={'VALUE': 'Drought Category', 'DATE': 'Date'},
+        title='Escasez del Agua en Ciudad de México'
+    )
+
+    # Set y-axis ticks manually
+    fig.update_yaxes(tickmode='array', tickvals=[1, 2, 3, 4, 5, 6])
+
+    # Format x-axis range and tick labels
+    fig.update_xaxes(
+        range=[t_filtered['DATE'].min(), t_filtered['DATE'].max()],
+        #tickformat="%Y",
+        dtick="M12",  # One tick every 12 months
+        tickangle=45
+    )
+    
+    legend_text = """
+        <b>Categorías de Escasez:</b><br>
+        6 - Alta escasez<br>
+        5 - Sequía excepcional<br>
+        4 - Sequía extrema<br>
+        3 - Sequía severa<br>
+        2 - Sequía moderada<br>
+        1 - Anormalmente seco<br>
+        0 - Sin escasez
+    """
+
+    fig.add_annotation(
+        text=legend_text,
+        xref="paper", yref="paper",
+        x=0.02, y=0.5,  # position at the right side
+        showarrow=False,
+        align="left",
+        bordercolor="black",
+        borderwidth=1,
+        bgcolor="white",
+        opacity=0.8
+    )
+
+    fig.update_layout(
+        width=2400,
+        height=650,
+        template='plotly_white'
+    )    
+    
+    # FIRST PLOT
+    st.write(fig)
     
     
 if __name__ == "__main__":
