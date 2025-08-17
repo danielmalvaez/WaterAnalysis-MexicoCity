@@ -105,7 +105,6 @@ def order_categorical(df: pd.DataFrame, col: str, order: list):
 # ------------------------------------------------------------------------------
 # LOADING DATA
 # ------------------------------------------------------------------------------
-dataConsumo19 = load_data("../data/consumoAgua19.csv", "csv")
 dataFeasibility = load_data("../data/feasibilityMexCity.csv", "csv")
 dataHogaresCol = load_data("../data/hogaresCol.csv", "csv")
 

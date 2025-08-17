@@ -107,84 +107,6 @@ def plot_static_map(df, title, show=True, write=False, file_name=None) :
     )
 
     return fig
-    
-def plot_animated_map(df, title, show=True, write=False, file_name=None) : 
-    # Convert DATE to string if it's datetime (required by Plotly animation)
-    # df["DATE"] = df["DATE"].astype(str)
-
-    # Define category → color mapping
-    color_discrete_map = {
-        'SIN SEQUIA': '#f0f0f0',
-        'PRE-ALERTA': '#d9d9d9',
-        'VERDE': '#a6d96a',
-        'AMARILLO': '#ffffbf',
-        'NARANJA': '#fdae61',
-        'ROJO': '#d73027'
-    }
-    
-    color_map = {
-    "1": '#f0f0f0',     # Very light gray / near white
-    "2": '#1a9850',     # Light gray
-    "3": '#a6d96a',          # Soft green
-    "4": '#ffe066',       # Yellow
-    "5": '#fdae61',        # Orange
-    "6": '#d73027'            # Red
-    }
-    
-    mxc_drought_t = df[['DATE', 'geometry', 'NOMBRE_MUN', 'VALUE', 'color']]
-    
-    vmin = np.log10(mxc_drought_t["VALUE"].min())
-    vmax = np.log10(mxc_drought_t["VALUE"].max())
-
-    def normalize(val):
-        return (val - 1) / (6 - 1)
-
-    custom_scale = [
-        (normalize(1), "#f0f0f0"),
-        (normalize(2), "#1a9850"),
-        (normalize(3), "#a6d96a"),
-        (normalize(4), "#ffe066"),
-        (normalize(5), "#fdae61"),
-        (normalize(6), "#d73027"),
-    ]    
-
-    fig = px.choropleth_mapbox(mxc_drought_t,
-                        geojson=mxc_drought_t.__geo_interface__,
-                        locations="NOMBRE_MUN",
-                        color=np.log10(mxc_drought_t["VALUE"]),
-                        hover_name="NOMBRE_MUN",
-                        hover_data=["VALUE"],
-                        animation_frame='DATE',
-                        featureidkey='properties.NOMBRE_MUN',  
-                        # color_continuous_midpoint = 1,
-                        color_continuous_scale=custom_scale,
-                        range_color=[0,1],
-                        # color_discrete_map=color_map,
-                        mapbox_style="carto-positron",
-                        center={"lat": 19.33, "lon": -99.1332}, 
-                        zoom=9,)
-
-    fig.update_layout(margin=dict(l=20,r=0,b=0,t=70,pad=0),
-                    paper_bgcolor="white",
-                    width = 1000,
-                    height= 700,
-                    title_text = 'Evolución de la Sequía en la Ciudad de México 2003-2023',
-                    font_size=18,
-                    )
-
-    return fig
-    
-def normalize(val):
-    return (val - 1) / (6 - 1)
-
-custom_scale = [
-        (normalize(1), "#f0f0f0"),
-        (normalize(2), "#1a9850"),
-        (normalize(3), "#a6d96a"),
-        (normalize(4), "#ffe066"),
-        (normalize(5), "#fdae61"),
-        (normalize(6), "#d73027"),
-    ] 
 
 # ------------------------------------------------------------------------------
 # LOADING DATA
@@ -210,7 +132,7 @@ st.set_page_config(
 # Main page content
 st.markdown("# Evolución de la Sequía en la Ciudad de México")
 st.sidebar.markdown("# Time series y Mapas de Sequía/Escasez")
-        
+
 selected_range = st.slider(
 "Selecciona un rango de años",
 min_value=2003,
@@ -248,13 +170,13 @@ fig1.update_xaxes(
 )
 
 legend_text = """
-    <b>Categorías de Escasez:</b><br>
-    6 - Sequía crítica<br>
-    5 - Sequía severa<br>
-    4 - Sequía moderada<br>
-    3 - Sequía mínima<br>
-    2 - Anormalmente seco<br>
-    1 - Sin sequía
+    <b  style="color:black;">Categorías de Escasez:</b><br>
+    <span style="color:red;">6 - Sequía crítica</span><br>
+    <span style="color:darkorange;">5 - Sequía severa</span><br>
+    <span style="color:orange">4 - Sequía moderada</span><br>
+    <span style="color:#1a9850;">3 - Sequía mínima</span><br>
+    <span style="color:#a6d96a;">2 - Anormalmente seco</span><br>
+    <span style="color:black;">1 - Sin sequía</span>
 """
 
 fig1.add_annotation(
@@ -272,7 +194,7 @@ fig1.add_annotation(
 fig1.update_layout(
     width=2400,
     height=500,
-    template='plotly_white'
+    template='plotly_white',
 )
 
 # WRITING FIRST PLOT
@@ -293,24 +215,10 @@ st.markdown(
     unsafe_allow_html=True
 )  
 
-# ---------------------------
-#        Observations
-# ---------------------------
 st.markdown("---")
-st.markdown(
-    """
-    **Observaciones**
-    - En 2009, una intensa sequía afectó a la Ciudad de México, 
-    causando graves problemas de suministro de agua, además de pérdidas
-    millonarias reportadas. Todo debido a la falta de lluvias y gestión
-    inadecuada de los recursos hídricos. 
-    - Actualmente el monitor de sequía a Julio 2025 se encuentra 
-    sanamente en *Sin Sequía*.
-    """
-)
 
 # ---------------------------
-#        Observations
+#             MAPS
 # ---------------------------
 
 # Single value slider
@@ -363,3 +271,20 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )  
+
+# --------------------
+# OBSERVATIONS
+# --------------------
+
+st.markdown("---")
+st.markdown(
+    """
+    **Observaciones**
+    - En 2009, una intensa sequía afectó a la Ciudad de México, 
+    causando graves problemas de suministro de agua, además de pérdidas
+    millonarias reportadas. Todo debido a la falta de lluvias y gestión
+    inadecuada de los recursos hídricos. 
+    - Actualmente el monitor de sequía a Julio 2025 se encuentra 
+    sanamente en *Sin Sequía*.
+    """
+)
