@@ -45,3 +45,5 @@ An eye now on :
 * https://blog.streamlit.io/crafting-a-dashboard-app-in-python-using-streamlit/
 * https://www.youtube.com/watch?v=yg0Y7w4AHhw
 * https://shields.io/
+* https://www.gob.mx/bancodelbienestar/articulos/693-aniversario-de-la-fundacion-de-mexico-tenochtitlan?idiom=es#:~:text=Sobre%20la%20fecha%20precisa%20de,que%20sucedi%C3%B3%20en%20el%201325.
+* https://autoridadcentrohistorico.cdmx.gob.mx/centro-historico-de-la-ciudad-de-mexico/conoce-tu-centro-historico
