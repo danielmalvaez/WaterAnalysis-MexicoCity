@@ -16,12 +16,13 @@ Este repositorio guarda el código y la implementación del [Dashboard](linktobe
     * plotly
     * shapely.geometry
     * squarify
-
+    * huggingface_hub
 
 ## 🧭 ¿Cómo usar el dashboard?
 
 ## **📚 Data Sources & Support References**
 
+* Hugging Face Hub: [Cleaned Datasets for Dashboard](https://huggingface.co/datasets/danielmlvz/water-dashboard)
 * Comisión Nacional del Agua (CONAGUA). (2023). Informe sobre la disponibilidad de agua en Ciudad de México.
 * Instituto Nacional de Estadística y Geografía (INEGI). (2023). Estadísticas del mercado inmobiliario en Ciudad de México.
 * Secretaría de Desarrollo Urbano y Vivienda (SEDUVI). (2023). Plan de Desarrollo Urbano de Ciudad de México.

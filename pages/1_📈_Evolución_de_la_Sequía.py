@@ -38,6 +38,10 @@ import unicodedata
 # Provide a running estimate
 from tqdm import tqdm
 
+import duckdb
+from huggingface_hub import hf_hub_url
+from shapely.geometry import Polygon, MultiPolygon
+
 # Configure warnings to keep the output clean.
 warnings.filterwarnings("ignore")
 
@@ -50,6 +54,27 @@ warnings.filterwarnings("ignore")
 # ------------------------------------------------------------------------------
 # Functions
 # ------------------------------------------------------------------------------
+
+# 1) Cache the connection (resource-level)
+@st.cache_resource
+def get_con():
+    con = duckdb.connect()
+    con.execute("INSTALL httpfs; LOAD httpfs;")
+    return con
+
+# 2) Cache the data (data-level)
+@st.cache_data(ttl=6*3600, show_spinner="Cargando datos de drought…")
+def load_drought(repo_id: str, filename: str, revision: str = "main") -> pd.DataFrame:
+    # Build a stable CDN URL (supports HTTP range properly)
+    url = hf_hub_url(
+        repo_id=repo_id,
+        filename=filename,
+        repo_type="dataset",
+        revision=revision,
+    )
+    con = get_con()
+    # Use parameter binding so the SQL text stays stable for caching
+    return con.execute("SELECT * FROM read_parquet($url)", {"url": url}).df()
 
 @st.cache_data
 def load_data(path, ext = 'csv', sheet_name = ''):
@@ -111,8 +136,11 @@ def plot_static_map(df, title, show=True, write=False, file_name=None) :
 # ------------------------------------------------------------------------------
 # LOADING DATA
 # ------------------------------------------------------------------------------
-
-dataDrought = load_data("../data/droughtMexCity.csv", "csv")
+dataDrought = load_drought(
+    repo_id="danielmlvz/water-dashboard",
+    filename="drought/part-0.parquet",
+    revision="main",
+)
 
 # Data Drought adjustments for a geopandas df
 dataDrought["geometry"] = gpd.GeoSeries.from_wkt(dataDrought["geometry"])
@@ -143,7 +171,7 @@ value=(2003, 2023)  # Initial lower and upper bounds
 # Aggregate data
 t = dataDrought.groupby(by=['DATE',
                             'MONTH',
-                            'YEAR'])['VALUE'].mean().reset_index()
+                            'YEAR'])['VALUE_1'].mean().reset_index()
         
 t['DATE'] = pd.to_datetime(t['DATE'])        
 t_filtered = t[(t['YEAR']>=selected_range[0])&(t['YEAR'] <= selected_range[1])]
@@ -152,7 +180,7 @@ t_filtered = t[(t['YEAR']>=selected_range[0])&(t['YEAR'] <= selected_range[1])]
 fig1 = px.line(
     t_filtered,
     x='DATE',
-    y='VALUE',
+    y='VALUE_1',
     markers=True,
     #labels={'VALUE': 'Drought Category', 'DATE': 'Date'},
     title='Niveles de Sequía Promedio en Ciudad de México'

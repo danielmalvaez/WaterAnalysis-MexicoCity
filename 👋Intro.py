@@ -38,6 +38,10 @@ import unicodedata
 # Provide a running estimate
 from tqdm import tqdm
 
+import duckdb
+from huggingface_hub import hf_hub_url
+from shapely.geometry import Polygon, MultiPolygon
+
 # Configure warnings to keep the output clean.
 warnings.filterwarnings("ignore")
 
@@ -186,7 +190,7 @@ def main() -> None:
     """
     El objetivo de este proyecto comenzó con un análisis de la situación 
     del agua en la Ciudad de México y poder tomar una decisión más 
-    informada en cuando a dónde comprar/rentar una casa o departamento. 
+    informada en cuanto a dónde comprar/rentar una casa o departamento. 
     Sin embargo, conforme fui realizando el análisis me di cuenta que 
     el dashboard también funciona como una fuente para generar 
     conciencia y ver como al paso de los años la creciente 
