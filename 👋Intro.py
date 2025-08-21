@@ -188,13 +188,17 @@ def main() -> None:
     st.write("## Acerca del Proyecto")            
     st.markdown(
     """
-    El objetivo de este proyecto comenzó con un análisis de la situación 
-    del agua en la Ciudad de México y poder tomar una decisión más 
-    informada en cuanto a dónde comprar/rentar una casa o departamento. 
-    Sin embargo, conforme fui realizando el análisis me di cuenta que 
-    el dashboard también funciona como una fuente para generar 
-    conciencia y ver como al paso de los años la creciente 
-    incertidumbre de si habrá agua disponible o no es cada vez más relevante.
+    Este proyecto comenzó con un único objetivo : analizar la situación del
+    agua en la Ciudad de México para poder tomar una decisión más informada 
+    sobre donde rentar/comprar una vivienda en la ciudad. La motivación surge 
+    de preocupaciones personales respecto al contexto actual del abastecimiento 
+    de agua en la capital.
+    
+    Sin embargo, conforme fui realizando el análisis, descubrí que el dashboard 
+    también tiene otro objetivo. Más allá de ser una herramienta informativa, 
+    también se converte en una fuente de información que muestra cómo, con el 
+    paso de los años, la incertidumbre sobre la disponibilidad de agua se ha 
+    vuelto un tema cada vez más relevante.
     """
     )
     
@@ -205,9 +209,9 @@ def main() -> None:
     islote, con registro en 1325. El mito dice que Huitzilopochtli profetizó
     a los aztecas o mexicas, durante su migración desde Aztlán y que debían
     buscar en un lago un águila posada sobre un nopal con una serpiente entre
-    sus garras. Luego de un arduo recorrido (de aproximadamente 210 años) llegaron a lo que 
-    se conocía como el Lago de Texcoco, que es donde se fundó la ciudad de
-    Tenochtitlán (actualmente la Ciudad de México) en 1325. 
+    sus garras. Luego de un arduo recorrido (de aproximadamente 210 años) 
+    llegaron a lo que se conocía como el Lago de Texcoco, que es donde se 
+    fundó la ciudad de Tenochtitlán (actualmente la Ciudad de México) en 1325. 
     
     Con el paso del tiempo, la ciudad se convirtió en un centro de poder
     importante en Mesoamérica, siendo el imperio mexica el que tenía el poder.
