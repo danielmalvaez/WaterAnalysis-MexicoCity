@@ -85,18 +85,30 @@ dataConsumo19 = load_datasets(
     revision="main",
 )
 
+hogaresGrado = load_datasets(
+    repo_id="danielmlvz/water-dashboard",
+    filename="densidadHogares/part-0.parquet",
+    revision="main"
+)
+hogaresGrado["geometry"] = gpd.GeoSeries.from_wkt(hogaresGrado["geometry"])
+hogaresGrado = gpd.GeoDataFrame(hogaresGrado, geometry="geometry")
+hogaresGrado = hogaresGrado.set_crs(epsg=4326, inplace=True)
+
 habCons = load_datasets(
     repo_id="danielmlvz/water-dashboard",
     filename="habCons/part-0.parquet",
     revision="main",
 )
-
 habCons["geometry"] = gpd.GeoSeries.from_wkt(habCons["geometry"])
 habCons = gpd.GeoDataFrame(habCons, geometry="geometry")
 habCons = habCons.set_crs(epsg=4326, inplace=True)
 
 # Last Value is a None value
 habCons = habCons.iloc[:-1]
+habCons = pd.merge(habCons,
+                   hogaresGrado[['cve_col', 'Sum_TotHog']],
+                   on="cve_col",
+                   how="left")
 
 # ------------------------------------------------------------------------------
 # PAGE INFORMATION
@@ -498,11 +510,9 @@ with tab2 :
     )
     allAgg["mayoria_idx"] = allAgg["mayoria_idx"].cat.set_categories(order_idx, ordered=True)
 
-    plot_df = allAgg
-
     # ---- build scatter ----
     fig = px.scatter(
-        plot_df,
+        allAgg,
         x="total_inmuebles",
         y="consumo_total",
         color="mayoria_idx",
@@ -570,7 +580,7 @@ with tab2 :
     if show_trend:
         # temporary figure with trendline, then merge trace for a clean legend
         fig_trend = px.scatter(
-            plot_df,
+            allAgg,
             x="total_inmuebles",
             y="consumo_total",
             trendline="ols",
@@ -599,12 +609,13 @@ with tab2 :
         homocedasticidad, ect.
         """
     )
-
+    
 # -----------------------------------------
 #          ENCUENTRA TU COLONIA
 # -----------------------------------------
 with tab3 : 
-    # ---- Sidebar or top filter ----
+    
+    # Sidebar or top filter
     colonias = sorted(habCons["colonia"].dropna().unique())
     colonia_sel = st.selectbox(
         "Selecciona una colonia:",
@@ -612,106 +623,204 @@ with tab3 :
         index=0,
         placeholder="Escribe para buscar…"
     )
-
-    # ---- Filter dataset ----
-    if colonia_sel != "(Todas)":
-        hab_plot = habCons[habCons["colonia"] == colonia_sel]
-    else:
-        hab_plot = habCons
-
-    hab_plot["C_PROMVIVC"] = pd.to_numeric(hab_plot["C_PROMVIVC"], errors="coerce").clip(1, 5).fillna(1).astype(int)
-
-    label_map = {
-        1: "1 · Muy Bajo",
-        2: "2 · Bajo",
-        3: "3 · Medio",
-        4: "4 · Alto",
-        5: "5 · Muy alto"
-    }
-    hab_plot["C_PROMVIVC_lbl"] = hab_plot["C_PROMVIVC"].map(label_map)
-
-    # Orden fijo en la leyenda
-    category_order = ["1 · Muy Bajo", "2 · Bajo", "3 · Medio", "4 · Alto", "5 · Muy alto"]
-
-    # 2) Paleta discreta (inspirada en Viridis, de bajo→alto)
-    color_map = {
-        "1 · Muy Bajo":"#fde725",  # amarillo
-        "2 · Bajo":    "#7ad151",
-        "3 · Medio":   "#22a884",
-        "4 · Alto"    :"#2a788e",
-        "5 · Muy alto":"#440154",  # morado oscuro
-    }
     
-    color_map = {
-        "1 · Muy Bajo": "#80deea",  # aqua claro
-        "2 · Bajo":     "#26c6da",  # turquesa medio
-        "3 · Medio":    "#00838f",  # teal profundo
-        "4 · Alto":     "#004d40",  # verde azulado oscuro
-        "5 · Muy alto": "#002633",  # azul marino casi negro
-    }
+    col1Find, col2Find = st.columns([5,5])    
+    
+    with col1Find : 
+        
+        # Filtering by colonia selected
+        if colonia_sel != "(Todas)":
+            hab_plot = habCons[habCons["colonia"] == colonia_sel]
+        else:
+            hab_plot = habCons
 
-    # 3) Construir el choropleth como categórico (mejor que continuo para 5 clases)
-    fig = px.choropleth_mapbox(
-        hab_plot,
-        geojson=hab_plot.__geo_interface__,         # GeoJSON directo del GeoDataFrame
-        locations=hab_plot.index,                   # índice como key
-        featureidkey="id",                         # (Plotly usa 'id' por defecto en __geo_interface__)
-        color="C_PROMVIVC_lbl",                    # columna categórica
-        category_orders={"C_PROMVIVC_lbl": category_order},
-        color_discrete_map=color_map,
-        hover_name="colonia",
-        hover_data={
-            "alcaldia": True,
-            "SUM_cons_t": ":,",                    # miles
-            "C_PROMVIVC_lbl": False,               # ya está por color/leyenda
-            "C_PROMVIVC": True                     # muestra la clase numérica base
-        },
-        mapbox_style="carto-positron",
-        zoom=10,
-        center={"lat": 19.3333, "lon": -99.1333},
-        opacity=0.75,
-        labels={
-            "SUM_cons_t": "Consumo total (m³)",
-            "C_PROMVIVC": "Clase (1–5)"
-        },
-        title="Consumo de Agua en Ciudad de México — C_PROMVIVC (cuantiles 1–5)"
-    )
+        hab_plot["C_PROMVIVC"] = pd.to_numeric(hab_plot["C_PROMVIVC"], errors="coerce").clip(1, 5).fillna(1).astype(int)
 
-    # 4) Estilo fino: bordes, leyenda, márgenes
-    fig.update_traces(marker_line_width=0.5, marker_line_color="white")
-    fig.update_layout(
-        margin=dict(l=0, r=0, t=50, b=0),
-        height=700,
-        legend=dict(
-            title="C_PROMVIVC (1–5)",
-            orientation="h",
-            yanchor="bottom", y=0.92,
-            xanchor="left", x=0
+        label_map = {
+            1: "1 · Muy Bajo",
+            2: "2 · Bajo",
+            3: "3 · Medio",
+            4: "4 · Alto",
+            5: "5 · Muy alto"
+        }
+        hab_plot["C_PROMVIVC_lbl"] = hab_plot["C_PROMVIVC"].map(label_map)
+
+        # Orden fijo en la leyenda
+        category_order = ["1 · Muy Bajo", "2 · Bajo", "3 · Medio", "4 · Alto", "5 · Muy alto"]
+            
+        color_map = {
+            "1 · Muy Bajo": "#80deea",  # aqua claro
+            "2 · Bajo":     "#26c6da",  # turquesa medio
+            "3 · Medio":    "#00838f",  # teal profundo
+            "4 · Alto":     "#004d40",  # verde azulado oscuro
+            "5 · Muy alto": "#002633",  # azul marino casi negro
+        }
+
+        # 3) Construir el choropleth como categórico (mejor que continuo para 5 clases)
+        fig = px.choropleth_mapbox(
+            hab_plot,
+            geojson=hab_plot.__geo_interface__,         # GeoJSON directo del GeoDataFrame
+            locations=hab_plot.index,                   # índice como key
+            featureidkey="id",                         # (Plotly usa 'id' por defecto en __geo_interface__)
+            color="C_PROMVIVC_lbl",                    # columna categórica
+            category_orders={"C_PROMVIVC_lbl": category_order},
+            color_discrete_map=color_map,
+            hover_name="colonia",
+            hover_data={
+                "alcaldia": True,
+                "SUM_cons_t": ":,",                    # miles
+                "C_PROMVIVC_lbl": False,               # ya está por color/leyenda
+                "C_PROMVIVC": True,                     # muestra la clase numérica base
+                "Sum_TotHog" : True
+            },
+            mapbox_style="carto-positron",
+            zoom=9.75,
+            center={"lat": 19.36, "lon": -99.1333},
+            opacity=0.75,
+            labels={
+                "SUM_cons_t": "Consumo total (m³)",
+                "C_PROMVIVC": "Clase (1–5)"
+            },
+            title="Clasificación del Consumo Promedio Habitacional de Agua en Ciudad de México (cuantiles 1–5)"
         )
-    )
 
-    # Hover limpio
-    fig.update_traces(
-        hovertemplate="<b>%{hovertext}</b><br>"  # hover_name (colonia)
-                    "Alcaldía: %{customdata[0]}<br>"
-                    "Consumo total: %{customdata[1]:,.0f} m³<br>"
-                    "Clase: %{customdata[3]}<extra></extra>"
-    )
+        # 4) Estilo fino: bordes, leyenda, márgenes
+        fig.update_traces(marker_line_width=0.5, marker_line_color="white")
+        fig.update_layout(
+            margin=dict(l=0, r=0, t=50, b=0),
+            height=700,
+            legend=dict(
+                title="Nivel de Consumo (1–5)",
+                orientation="h",
+                yanchor="bottom", y=0.92,
+                xanchor="left", x=0
+            )
+        )
 
-    # 5) Mostrar en Streamlit
-    st.plotly_chart(fig, use_container_width=True)
+        # Hover limpio
+        fig.update_traces(
+            hovertemplate="<b>%{hovertext}</b><br>"  # hover_name (colonia)
+                        "Alcaldía: %{customdata[0]}<br>"
+                        "Consumo total: %{customdata[1]:,.0f} m³<br>"
+                        "Inmuebles Habitables: %{customdata[4]}<br>"
+                        "Clase: %{customdata[3]}<extra></extra>"
+                        
+        )
 
-    # 6) Bloque explicativo (debajo del mapa)
-    st.markdown(
-        """
-        <div style="background-color:#f8f9fa; padding:10px 12px; border-radius:10px; font-size:14px;">
-        <b>C_PROMVIVC</b>: campo reclasificado en <i>cuantiles</i> (5 rangos) a partir de <b>PROMVIVCON</b>.<br>
-        • Valor <b>5</b> → consumo de agua <b>muy alto</b><br>
-        • Valor <b>1</b> → consumo de agua <b>bajo</b>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+        # 5) Mostrar en Streamlit
+        st.plotly_chart(fig, use_container_width=True)
+
+        # 6) Bloque explicativo (debajo del mapa)
+        st.markdown(
+            """
+            <div style="background-color:#f8f9fa; padding:10px 12px; border-radius:10px; font-size:14px;">
+            <b>C_PROMVIVC</b>: campo reclasificado en <i>cuantiles</i> (5 rangos) a partir del consumo promedio por vivienda y el cual es utilizado en este mapa.<br>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with col2Find : 
+        fig = go.Figure()
+
+        # Normalize & colormap
+        vmin = hogaresGrado['ID'].min()
+        vmax = hogaresGrado['ID'].max()
+        norm = Normalize(vmin=vmin, vmax=vmax)
+        cmap = cm.get_cmap('viridis')
+
+        # --- Filled polygons
+        for _, row in hogaresGrado.iterrows():
+            geom = row['geometry']
+            val = row['ID']
+            grado = row.get('grado', None)
+            colonia = row.get('colonia', None)
+            color = to_hex(cmap(norm(val)))
+
+            polys = [geom] if isinstance(geom, Polygon) else (geom.geoms if isinstance(geom, MultiPolygon) else [])
+            for poly in polys:
+                x, y = poly.exterior.xy
+                fig.add_trace(go.Scatter(
+                    x=np.asarray(x), y=np.asarray(y),
+                    mode='lines',
+                    line=dict(color='rgba(0,0,0,0)', width=0),  # outline handled below
+                    fill='toself', fillcolor=color,
+                    hovertemplate=(
+                        "<b>%{customdata[0]}</b><br>"
+                        "ID: %{customdata[1]}<br>"
+                        "Grado: %{customdata[2]}<extra></extra>"
+                    ),
+                    customdata=[[colonia, val, grado]],
+                    showlegend=False
+                ))
+
+        # --- Thin outlines overlay (once per polygon)
+        for _, row in hogaresGrado.iterrows():
+            geom = row['geometry']
+            polys = [geom] if isinstance(geom, Polygon) else (geom.geoms if isinstance(geom, MultiPolygon) else [])
+            for poly in polys:
+                x, y = poly.exterior.xy
+                fig.add_trace(go.Scatter(
+                    x=np.asarray(x), y=np.asarray(y),
+                    mode='lines',
+                    line=dict(color='black', width=0.4),
+                    hoverinfo='skip',
+                    opacity=0.3,
+                    showlegend=False
+                ))
+
+        # --- Real colorbar via 1x1 Heatmap (hidden)
+        fig.add_trace(go.Heatmap(
+            z=[[vmin, vmax]],
+            showscale=True,
+            colorscale='Viridis',
+            colorbar=dict(
+                title='ID',
+                thickness=14,
+                len=0.75,
+                x=1.02,
+                xanchor='left'
+            ),
+            hoverinfo='skip',
+            visible=False
+        ))
+
+        # --- Layout polish
+        fig.update_layout(
+            title='Concentración Habitacional',
+            margin=dict(l=10, r=80, t=50, b=10),
+            width=800,
+            height=900,
+            xaxis=dict(
+                showgrid=False, zeroline=False, visible=False, scaleanchor='y', scaleratio=1
+            ),
+            yaxis=dict(
+                showgrid=False, zeroline=False, visible=False
+            ),
+            hoverlabel=dict(
+                bgcolor='white',
+                font=dict(size=12)
+            )
+        )
+
+        st.write(fig)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     st.write("WIP")
     

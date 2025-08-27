@@ -7,33 +7,12 @@ Author: Daniel Malváez
 from __future__ import annotations
 
 # Standard library imports.
-import json
 import warnings
 import streamlit as st
-
-# --------------------
-# Third Party Imports
-# --------------------
 import pandas as pd
-import json
-import geopandas as gpd
 
 # Configure warnings to keep the output clean.
 warnings.filterwarnings("ignore")
-
-# ------------------------------------------------------------------------------
-# Functions
-# ------------------------------------------------------------------------------
-
-@st.cache_data
-def load_data(path, ext = 'csv', sheet_name = ''):
-    if ext == 'csv':
-        return pd.read_csv(path)
-    elif ext == 'xlsx' : 
-        return pd.read_excel(path, sheet_name=sheet_name)
-    elif ext == 'json' : 
-        with open(path, "r", encoding="utf-8") as f:
-            return json.load(f)
 
 # ------------------------------------------------------------------------------
 #        Helpers
@@ -58,22 +37,6 @@ def order_categorical(df: pd.DataFrame, col: str, order: list):
     if col in df.columns:
         df[col] = pd.Categorical(df[col], categories=order, ordered=True)
     return df
-
-
-# ------------------------------------------------------------------------------
-# LOADING DATA
-# ------------------------------------------------------------------------------
-dataFeasibility = load_data("../data/feasibilityMexCity.csv", "csv")
-dataHogaresCol = load_data("../data/hogaresCol.csv", "csv")
-
-# Consumption every two months by neighborhood
-consPath = '../data/consumo-hab-promedio-bimestral-agua-por-colonia-m3.json'
-dataCons = load_data(consPath, 'json')
-habCons = gpd.GeoDataFrame.from_features(dataCons['features'])
-
-dataIndexSHF = pd.read_csv("../data/indexSHF.csv")
-dataReports = pd.read_csv("../data/reportsAllHist.csv")
-density = pd.read_csv("../data/density.csv")
 
 # ------------------------------------------------------------------------------
 # App
