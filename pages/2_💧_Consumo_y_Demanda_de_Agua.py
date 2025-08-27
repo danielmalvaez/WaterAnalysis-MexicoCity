@@ -40,6 +40,7 @@ import duckdb
 from huggingface_hub import hf_hub_url
 from shapely.geometry import Polygon, MultiPolygon
 import textwrap
+import matplotlib.colors as mcolors
 
 # Configure warnings to keep the output clean.
 warnings.filterwarnings("ignore")
@@ -92,7 +93,8 @@ hogaresGrado = load_datasets(
 )
 hogaresGrado["geometry"] = gpd.GeoSeries.from_wkt(hogaresGrado["geometry"])
 hogaresGrado = gpd.GeoDataFrame(hogaresGrado, geometry="geometry")
-hogaresGrado = hogaresGrado.set_crs(epsg=4326, inplace=True)
+hogaresGrado = hogaresGrado.set_crs(crs=32614)
+hogaresGrado = hogaresGrado.to_crs(4326)  
 
 habCons = load_datasets(
     repo_id="danielmlvz/water-dashboard",
@@ -109,6 +111,13 @@ habCons = pd.merge(habCons,
                    hogaresGrado[['cve_col', 'Sum_TotHog']],
                    on="cve_col",
                    how="left")
+
+
+hogaresGrado = pd.merge(hogaresGrado,
+                        habCons[["cve_col", "colonia"]],
+                        on="cve_col", how="left")
+hogaresGrado.drop(columns="colonia_x", inplace=True)
+hogaresGrado.rename(columns={"colonia_y" : "colonia"}, inplace=True)
 
 # ------------------------------------------------------------------------------
 # PAGE INFORMATION
@@ -626,6 +635,10 @@ with tab3 :
     
     col1Find, col2Find = st.columns([5,5])    
     
+# --------------------------------
+#      CONSUMO DE AGUA MAPA
+# --------------------------------
+    
     with col1Find : 
         
         # Filtering by colonia selected
@@ -720,109 +733,80 @@ with tab3 :
             unsafe_allow_html=True
         )
 
+# --------------------------------
+#    DENSIDAD POBLACIONAL MAPA
+# --------------------------------
+
     with col2Find : 
-        fig = go.Figure()
+        
+        # Filtering by colonia selected
+        if colonia_sel != "(Todas)":
+            hogaresFil = hogaresGrado[hogaresGrado["colonia"] == colonia_sel]
+        else:
+            hogaresFil = hogaresGrado
 
-        # Normalize & colormap
-        vmin = hogaresGrado['ID'].min()
-        vmax = hogaresGrado['ID'].max()
-        norm = Normalize(vmin=vmin, vmax=vmax)
-        cmap = cm.get_cmap('viridis')
+        
+        category_order = ["Muy baja concentración habitacional",
+                          "Baja concentración habitacional",
+                          "Media concentración habitacional",
+                          "Alta concentración habitacional",
+                          "5 · Muy alta concentración habitacional"]
+        
+        color_map = {
+            "Muy baja concentración habitacional": "#440154",  # dark purple
+            "Baja concentración habitacional":     "#3b528b",  # blue
+            "Media concentración habitacional":    "#21918c",  # teal/green
+            "Alta concentración habitacional":     "#5ec962",  # light green
+            "Muy alta concentración habitacional": "#fde725"   # yellow
+        }
+                
+        fig = px.choropleth_mapbox(
+            hogaresFil,
+            geojson=hogaresFil.__geo_interface__,         # GeoJSON directo del GeoDataFrame
+            locations=hogaresFil.index,                   # índice como key
+            color="grado",                    # columna categórica
+            category_orders={"grado": category_order},
+            color_discrete_map=color_map,               # nuestro mapa discreto Viridis
+            hover_name="colonia",
+            hover_data={
+                "alcaldia": True,
+                "grado": True,               # ya está por color/leyenda
+            },
+            mapbox_style="carto-positron",
+            zoom=9.75,
+            center={"lat": 19.36, "lon": -99.1333},
+            opacity=0.75,
+            labels={
+                "grado": "Densidad poblacional",
+            },
+            title="Densidad Poblacional en Ciudad de México por Colonias"
+        )
 
-        # --- Filled polygons
-        for _, row in hogaresGrado.iterrows():
-            geom = row['geometry']
-            val = row['ID']
-            grado = row.get('grado', None)
-            colonia = row.get('colonia', None)
-            color = to_hex(cmap(norm(val)))
-
-            polys = [geom] if isinstance(geom, Polygon) else (geom.geoms if isinstance(geom, MultiPolygon) else [])
-            for poly in polys:
-                x, y = poly.exterior.xy
-                fig.add_trace(go.Scatter(
-                    x=np.asarray(x), y=np.asarray(y),
-                    mode='lines',
-                    line=dict(color='rgba(0,0,0,0)', width=0),  # outline handled below
-                    fill='toself', fillcolor=color,
-                    hovertemplate=(
-                        "<b>%{customdata[0]}</b><br>"
-                        "ID: %{customdata[1]}<br>"
-                        "Grado: %{customdata[2]}<extra></extra>"
-                    ),
-                    customdata=[[colonia, val, grado]],
-                    showlegend=False
-                ))
-
-        # --- Thin outlines overlay (once per polygon)
-        for _, row in hogaresGrado.iterrows():
-            geom = row['geometry']
-            polys = [geom] if isinstance(geom, Polygon) else (geom.geoms if isinstance(geom, MultiPolygon) else [])
-            for poly in polys:
-                x, y = poly.exterior.xy
-                fig.add_trace(go.Scatter(
-                    x=np.asarray(x), y=np.asarray(y),
-                    mode='lines',
-                    line=dict(color='black', width=0.4),
-                    hoverinfo='skip',
-                    opacity=0.3,
-                    showlegend=False
-                ))
-
-        # --- Real colorbar via 1x1 Heatmap (hidden)
-        fig.add_trace(go.Heatmap(
-            z=[[vmin, vmax]],
-            showscale=True,
-            colorscale='Viridis',
-            colorbar=dict(
-                title='ID',
-                thickness=14,
-                len=0.75,
-                x=1.02,
-                xanchor='left'
-            ),
-            hoverinfo='skip',
-            visible=False
-        ))
-
-        # --- Layout polish
+        # 4) Estilo fino: bordes, leyenda, márgenes
+        fig.update_traces(marker_line_width=0.5, marker_line_color="white")
         fig.update_layout(
-            title='Concentración Habitacional',
-            margin=dict(l=10, r=80, t=50, b=10),
-            width=800,
-            height=900,
-            xaxis=dict(
-                showgrid=False, zeroline=False, visible=False, scaleanchor='y', scaleratio=1
-            ),
-            yaxis=dict(
-                showgrid=False, zeroline=False, visible=False
-            ),
-            hoverlabel=dict(
-                bgcolor='white',
-                font=dict(size=12)
+            margin=dict(l=0, r=0, t=50, b=0),
+            height=700,
+            legend=dict(
+                title="Nivel de Consumo (1–5)",
+                orientation="h",
+                yanchor="bottom", y=0.92,
+                xanchor="left", x=0
             )
         )
 
+        # Hover limpio
+        fig.update_traces(
+            hovertemplate="<b>%{hovertext}</b><br>"  # hover_name (colonia)
+                        "Alcaldía: %{customdata[0]}<br>"
+                        "Grado: %{customdata[1]}<extra></extra>"                        
+        )
+        
         st.write(fig)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     st.write("WIP")
+    st.write("· Ranking de la colonia en consumo")
     
 # -----------------------------------------
 #               REFERENCES
