@@ -1,6 +1,5 @@
 """
-Page 1 for Dashboard: Evolución de la sequía en México
-
+Page 2 for Dashboard: Consumo y demanda de Agua
 Author: Daniel Malváez
 """
 
@@ -8,7 +7,6 @@ from __future__ import annotations
 
 # Standard library imports.
 import json
-import unicodedata
 import warnings
 
 # Streamlit import
@@ -47,25 +45,19 @@ import textwrap
 warnings.filterwarnings("ignore")
 
 # ------------------------------------------------------------------------------
-# Constants
-# ------------------------------------------------------------------------------
-
-
-
-# ------------------------------------------------------------------------------
 # Functions
 # ------------------------------------------------------------------------------
 
-# 1) Cache the connection (resource-level)
+# Cache the connection (resource-level)
 @st.cache_resource
 def get_con():
     con = duckdb.connect()
     con.execute("INSTALL httpfs; LOAD httpfs;")
     return con
 
-# 2) Cache the data (data-level)
-@st.cache_data(ttl=6*3600, show_spinner="Cargando datos de drought…")
-def load_drought(repo_id: str, filename: str, revision: str = "main") -> pd.DataFrame:
+# Cache the data (data-level)
+@st.cache_data(ttl=6*3600, show_spinner="Cargando datos de consumo y demanda…")
+def load_datasets(repo_id: str, filename: str, revision: str = "main"):
     # Build a stable CDN URL (supports HTTP range properly)
     url = hf_hub_url(
         repo_id=repo_id,
@@ -76,29 +68,8 @@ def load_drought(repo_id: str, filename: str, revision: str = "main") -> pd.Data
     con = get_con()
     # Use parameter binding so the SQL text stays stable for caching
     return con.execute("SELECT * FROM read_parquet($url)", {"url": url}).df()
-
-@st.cache_data
-def load_data(path, ext = 'csv', sheet_name = ''):
-    """Function that loads information and stores in into the cache
-
-    Args:
-        path (str): internal path where the data or file is
-        ext (str, optional): type of file. Defaults to 'csv'.
-        sheet_name (str, optional): name of the sheet for excel files.
-                                    Defaults to ''.
-
-    Returns:
-        Object : DataFrame Object
-   """
-    if ext == 'csv':
-        return pd.read_csv(path)
-    elif ext == 'xlsx' : 
-        return pd.read_excel(path, sheet_name=sheet_name)
-    elif ext == 'json' : 
-        with open(path, "r", encoding="utf-8") as f:
-            return json.load(f)
         
-# --- Helper: tidy/wrap long labels so they don't overflow tiles ---
+# Helper: tidy/wrap long labels so they don't overflow tiles
 def wrap_label(s, width=18):
     if pd.isna(s):
         return s
@@ -108,13 +79,13 @@ def wrap_label(s, width=18):
 # LOADING DATA
 # ------------------------------------------------------------------------------
 
-dataConsumo19 = load_drought(
+dataConsumo19 = load_datasets(
     repo_id="danielmlvz/water-dashboard",
     filename="consumo19/part-0.parquet",
     revision="main",
 )
 
-habCons = load_drought(
+habCons = load_datasets(
     repo_id="danielmlvz/water-dashboard",
     filename="habCons/part-0.parquet",
     revision="main",
@@ -123,6 +94,9 @@ habCons = load_drought(
 habCons["geometry"] = gpd.GeoSeries.from_wkt(habCons["geometry"])
 habCons = gpd.GeoDataFrame(habCons, geometry="geometry")
 habCons = habCons.set_crs(epsg=4326, inplace=True)
+
+# Last Value is a None value
+habCons = habCons.iloc[:-1]
 
 # ------------------------------------------------------------------------------
 # PAGE INFORMATION
@@ -148,7 +122,7 @@ st.markdown(
 st.sidebar.markdown("# Consumo y Demanda de Agua en la CDMX")
 
 # -------------------------------------------
-#   DATA AGGREGATION THAT WORKS FOR ALL TABS
+#  DATA AGGREGATION THAT WORKS FOR ALL TABS
 # -------------------------------------------
 
 # Add filter
@@ -161,10 +135,11 @@ mappingDate = {"Febrero" : "2019-02-28",
             "Abril" : "2019-04-30",
             "Junio" : "2019-06-30"}
 
-dataConsumo19F = dataConsumo19[dataConsumo19['fecha_referencia'] == mappingDate[option]]
+# Filtering using the provided bimester and date by user
+consF = dataConsumo19[dataConsumo19['fecha_referencia'] == mappingDate[option]]
 
 # Neighborhood aggregation
-consWatAgg = dataConsumo19F.groupby(['colonia', 'alcaldia']).agg({
+consWatAgg = consF.groupby(['colonia', 'alcaldia']).agg({
     'consumo_total': 'sum',
     'inmuebles_domesticos': 'sum',
     'consumo_total_dom': 'sum',
@@ -179,7 +154,7 @@ consWatAgg = dataConsumo19F.groupby(['colonia', 'alcaldia']).agg({
 consWatAgg = consWatAgg[~(consWatAgg.iloc[:, 2:] == 0).all(axis=1)]
 
 # insert a pivot and create new columns based on indice_des 
-shareIdxDev = dataConsumo19F.pivot_table(
+shareIdxDev = consF.pivot_table(
     index=['colonia', 'alcaldia'],
     columns='indice_des',
     values='total_inmuebles',
@@ -202,10 +177,12 @@ tab1, tab2, tab3 = st.tabs([
 
 with tab1 : 
 
-    # Keep only the global Top 20 by consumo_total (change as you like)
+    # Keep only the global Top 20 by consumo_total 
     d_top = allAgg.nlargest(20, "consumo_total").copy()
-    # Optional: format the custom label
+    
+    # Formatting the custom label
     d_top['label'] = d_top.apply(lambda row: f"{row['colonia']},<br>{row['alcaldia']}<br>({int(row['consumo_total'])} m³)", axis=1)
+    
     # Wrap long colonia names for readability inside tiles
     d_top["colonia_wrapped"] = d_top["colonia"].apply(wrap_label)
 
@@ -624,7 +601,7 @@ with tab2 :
     )
 
 # -----------------------------------------
-#               ENCUENTRATE
+#          ENCUENTRA TU COLONIA
 # -----------------------------------------
 with tab3 : 
     # ---- Sidebar or top filter ----
@@ -663,6 +640,14 @@ with tab3 :
         "3 · Medio":   "#22a884",
         "4 · Alto"    :"#2a788e",
         "5 · Muy alto":"#440154",  # morado oscuro
+    }
+    
+    color_map = {
+        "1 · Muy Bajo": "#80deea",  # aqua claro
+        "2 · Bajo":     "#26c6da",  # turquesa medio
+        "3 · Medio":    "#00838f",  # teal profundo
+        "4 · Alto":     "#004d40",  # verde azulado oscuro
+        "5 · Muy alto": "#002633",  # azul marino casi negro
     }
 
     # 3) Construir el choropleth como categórico (mejor que continuo para 5 clases)
@@ -729,7 +714,7 @@ with tab3 :
     )
 
     st.write("WIP")
-
+    
 # -----------------------------------------
 #               REFERENCES
 # -----------------------------------------

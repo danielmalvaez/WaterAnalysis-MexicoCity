@@ -8,53 +8,18 @@ from __future__ import annotations
 
 # Standard library imports.
 import json
-import unicodedata
 import warnings
-
-# Streamlit import
 import streamlit as st
 
 # --------------------
 # Third Party Imports
 # --------------------
-# Data management
 import pandas as pd
-import numpy as np
 import json
-# Treemap visualization
-import squarify
-from shapely.geometry import Point
-import seaborn as sns
-import plotly.graph_objects as go
-import matplotlib.pyplot as plt
-import plotly.express as px # Interactive
-from matplotlib import cm
-from matplotlib.colors import Normalize, to_hex
-# To make spatial data
-from scipy.spatial import cKDTree
 import geopandas as gpd
-# No accents
-import unicodedata
-# Provide a running estimate
-from tqdm import tqdm
-
-import duckdb
-from huggingface_hub import hf_hub_url
-from shapely.geometry import Polygon, MultiPolygon
 
 # Configure warnings to keep the output clean.
 warnings.filterwarnings("ignore")
-
-# ------------------------------------------------------------------------------
-# Constants
-# ------------------------------------------------------------------------------
-
-APP_TITLE = (
-    "Futuro del Agua en Ciudad de México🚰 🇲🇽"
-)
-APP_VERSION = "v0.1.0"
-AUTHOR = "Daniel Malváez"
-URL = "https://www.linkedin.com/in/daniel-malvaez/"
 
 # ------------------------------------------------------------------------------
 # Functions
@@ -62,17 +27,6 @@ URL = "https://www.linkedin.com/in/daniel-malvaez/"
 
 @st.cache_data
 def load_data(path, ext = 'csv', sheet_name = ''):
-    """Function that loads information and stores in into the cache
-
-    Args:
-        path (str): internal path where the data or file is
-        ext (str, optional): type of file. Defaults to 'csv'.
-        sheet_name (str, optional): name of the sheet for excel files.
-                                    Defaults to ''.
-
-    Returns:
-        Object : DataFrame Object
-   """
     if ext == 'csv':
         return pd.read_csv(path)
     elif ext == 'xlsx' : 
@@ -159,14 +113,14 @@ def main() -> None:
     # ---------------------------
     #     TITLE AND HEADERS
     # ---------------------------
-    st.title(APP_TITLE)
+    st.title("Futuro del Agua en Ciudad de México🚰 🇲🇽")
     
     col1desc, col2desc = st.columns([1, 4])  # adjust ratio for width
     with col1desc:
         st.markdown(
-            f"""
-            <p style="margin-bottom:0px;">Version: <i>{APP_VERSION}</i></p>
-            <p style="margin-top:2px; margin-bottom:4px;">Author: <i>{AUTHOR}</i></p>
+            """
+            <p style="margin-bottom:0px;">Version: <i>v0.1.0"</i></p>
+            <p style="margin-top:2px; margin-bottom:4px;">Author: <i>Daniel Malváez</i></p>
             """,
             unsafe_allow_html=True
         )
