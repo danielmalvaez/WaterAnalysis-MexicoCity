@@ -105,19 +105,22 @@ habCons["geometry"] = gpd.GeoSeries.from_wkt(habCons["geometry"])
 habCons = gpd.GeoDataFrame(habCons, geometry="geometry")
 habCons = habCons.set_crs(epsg=4326, inplace=True)
 
-# Last Value is a None value
-habCons = habCons.iloc[:-1]
-habCons = pd.merge(habCons,
-                   hogaresGrado[['cve_col', 'Sum_TotHog']],
-                   on="cve_col",
-                   how="left")
-
-
 hogaresGrado = pd.merge(hogaresGrado,
                         habCons[["cve_col", "colonia"]],
                         on="cve_col", how="left")
 hogaresGrado.drop(columns="colonia_x", inplace=True)
 hogaresGrado.rename(columns={"colonia_y" : "colonia"}, inplace=True)
+
+factibilidad = load_datasets(
+    repo_id="danielmlvz/water-dashboard",
+    filename="factibilidad/part-0.parquet",
+    revision="main",
+)
+
+# Coverting first to shapely and then to a geopandas df and adjust crs to 4326
+factibilidad["geometry"] = gpd.GeoSeries.from_wkt(factibilidad["geometry"])
+factibilidad = gpd.GeoDataFrame(factibilidad, geometry="geometry")
+factibilidad = factibilidad.set_crs(epsg=4326, inplace=True)
 
 # ------------------------------------------------------------------------------
 # PAGE INFORMATION
@@ -191,9 +194,9 @@ allAgg = allAgg.sort_values(by="consumo_total", ascending=False)
 # -----------------------------------------
 
 tab1, tab2, tab3 = st.tabs([
-    "🏢 Top 20 Colonias Mayor Consumo",
-    "📈 Relación # Inmuebles vs Consumo (m3)",
-    "🔍 Encuentra tu colonia (mapa 🗺️)"
+    "🏢 Top 20 Colonias más consumidoras",
+    "📈 # Inmuebles vs Consumo",
+    "🔍 Consumo en tu colonia (mapa 🗺️)"
 ])
 
 with tab1 : 
@@ -305,7 +308,7 @@ with tab1 :
     #     PIE PLOTS : PROPORCIONES
     # -----------------------------------------
     
-    col1, col2, col3 = st.columns([2,2,2])
+    col1, col2 = st.columns([2,2])
 
     # ----------------------------
     #       IDX DESARROLLO
@@ -446,44 +449,6 @@ with tab1 :
         # En Streamlit:
         st.plotly_chart(fig_pie, use_container_width=True)
 
-    # ----------------------------
-    #       RANKING & KPI
-    # ----------------------------
-    
-    with col3 :     
-        # Ordenar de menor a mayor para que las barras horizontales queden ordenadas
-        d_rank = d_top.sort_values("consumo_total", ascending=True)
-
-        fig_rank = px.bar(
-            d_rank,
-            x="consumo_total",
-            y="colonia",
-            orientation="h",
-            color="consumo_total",
-            color_continuous_scale="Blues",
-            labels={"consumo_total": "Consumo de agua (m³)", "colonia": ""},
-            title="Ranking de consumo de agua en las Top 20 colonias"
-        )
-
-        fig_rank.update_traces(
-            hovertemplate="<b>%{y}</b><br>Consumo: %{x:,.0f} m³<extra></extra>"
-        )
-
-        fig_rank.update_layout(
-            title_x=0.02,
-            margin=dict(t=60, r=20, b=20, l=60),
-            coloraxis_showscale=False,  # oculta la barra de color si no la quieres
-            height=600
-        )
-
-        # En Streamlit:
-        st.plotly_chart(fig_rank, use_container_width=True)
-
-
-        # Calcular consumo total
-        total_consumo_top20 = d_top["consumo_total"].sum()
-
-
     # --------------------
     # OBSERVATIONS
     # --------------------
@@ -499,7 +464,6 @@ with tab1 :
         la información a nivel manzana. 
         """
     )
-    
     
 # -----------------------------------------
 #    Relación # Inmuebles vs Consumo (m3)
@@ -633,7 +597,7 @@ with tab3 :
         placeholder="Escribe para buscar…"
     )
     
-    col1Find, col2Find = st.columns([5,5])    
+    col1Find, col2Find, col3Find = st.columns([2,2,2])    
     
 # --------------------------------
 #      CONSUMO DE AGUA MAPA
@@ -694,7 +658,7 @@ with tab3 :
                 "SUM_cons_t": "Consumo total (m³)",
                 "C_PROMVIVC": "Clase (1–5)"
             },
-            title="Clasificación del Consumo Promedio Habitacional de Agua en Ciudad de México (cuantiles 1–5)"
+            title="Consumo Promedio Habitacional de Agua en Ciudad de México (cuantiles 1–5)"
         )
 
         # 4) Estilo fino: bordes, leyenda, márgenes
@@ -788,7 +752,7 @@ with tab3 :
             margin=dict(l=0, r=0, t=50, b=0),
             height=700,
             legend=dict(
-                title="Nivel de Consumo (1–5)",
+                title="Clasificación de la Concentración",
                 orientation="h",
                 yanchor="bottom", y=0.92,
                 xanchor="left", x=0
@@ -804,9 +768,112 @@ with tab3 :
         
         st.write(fig)
 
+        st.markdown(
+            """
+            <div style="background-color:#f8f9fa; padding:10px 12px; border-radius:10px; font-size:14px;">
+            <b>Recolección (IPDP)</b>: A partir de la densidad de vivienda por km2 se identificaron zonas de alta concentración de vivienda en la Ciudad de México.<br>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+    
+    # --------------------------------
+    #     FACTIBILIDAD HIDRICA
+    # --------------------------------
 
-    st.write("WIP")
-    st.write("· Ranking de la colonia en consumo")
+    with col3Find : 
+        
+        mapColor = {
+            'ROJO': 'red',
+            'AMARILLO': 'yellow',
+            'NARANJA': 'orange',
+            'VERDE': 'green'
+        }
+        
+        factibilidad['color'] = factibilidad['fact_hidr'].map(mapColor)
+        factibilidad = factibilidad.reset_index(drop=True)
+        factibilidad['id'] = factibilidad.index
+        
+        # Filtering by colonia selected
+        if colonia_sel != "(Todas)":
+            hogaresFil = factibilidad[factibilidad["colonia"] == colonia_sel]
+        else:
+            hogaresFil = factibilidad
+        
+        category_order = ["ROJO",
+                          "AMARILLO",
+                          "NARANJA",
+                          "VERDE"]
+                        
+        fig = px.choropleth_mapbox(
+            hogaresFil,
+            geojson=hogaresFil.__geo_interface__,         # GeoJSON directo del GeoDataFrame
+            locations=hogaresFil.index,                   # índice como key
+            color="fact_hidr",                    # columna categórica
+            category_orders={"fact_hidr": category_order},
+            color_discrete_map=mapColor,               # nuestro mapa discreto Viridis
+            hover_name="colonia",
+            hover_data={
+                "alcaldia": True,
+                "fact_hidr": True,               # ya está por color/leyenda
+            },
+            mapbox_style="carto-positron",
+            zoom=9.75,
+            center={"lat": 19.36, "lon": -99.1333},
+            opacity=0.75,
+            labels={
+                "grado": "Densidad poblacional",
+            },
+            title="Grado de Factibilidad Hídrica en Ciudad de México"
+        )
+
+        # 4) Estilo fino: bordes, leyenda, márgenes
+        fig.update_traces(marker_line_width=0.1, marker_line_color="black")
+        fig.update_layout(
+            margin=dict(l=0, r=0, t=50, b=0),
+            height=700,
+            legend=dict(
+                title="Clasificación de la Factibilidad",
+                orientation="h",
+                yanchor="bottom", y=0.92,
+                xanchor="left", x=0
+            )
+        )
+
+        # Hover limpio
+        fig.update_traces(
+            hovertemplate="<b>%{hovertext}</b><br>"  # hover_name (colonia)
+                        "Alcaldía: %{customdata[0]}<br>"
+                        "Factibilidad: %{customdata[1]}<extra></extra>"                        
+        )
+        
+        st.write(fig)
+
+        st.markdown(
+            """
+            <div style="background-color:#f8f9fa; padding:10px 12px; border-radius:10px; font-size:14px;">
+            <b>Categorías</b>:<br>
+            🟩 Verde  -> Zonas con alta capacidad para mitigar riesgo de escasez<br>
+            🟨 Amarillo -> Zonas con buena capacidad, pero con algunas limitaciones<br>
+            🟧 Naranja -> Zonas con capacidad limitada para mitigar riesgo<br>
+            🟥 Rojo -> Zonas con poca o nula capacidad para mitigar riesgo<br>
+            <b>Geospatial Join</b>: se unieron dos datasets para mantener los nombres de colonias consistentes en este mapa, si encuentras alguna discrepancia mándame un mensaje.<br>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )    
+        
+    if colonia_sel != "(Todas)" : 
+        # Wrap metric in a centered div
+        st.markdown(
+            f"""
+            <div style="text-align: center;">
+                <h4 style="margin-bottom:0;">📊 Ranking de {len(habCons)} colonias, la seleccionada ocupa el puesto número :</h4>
+                <h2 style="margin-top:0;">{habCons[habCons["colonia"] == colonia_sel].index[0] + 1}</h2>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
     
 # -----------------------------------------
 #               REFERENCES
@@ -824,8 +891,12 @@ st.markdown(
     </p>
     <p style='color:grey; font-size:15px;margin-bottom:0px;'>
     <a href="https://datos.cdmx.gob.mx/dataset/consumo-habitacional-promedio-bimestral-de-agua-por-colonia-m3" target="_blank">
-            · Instituto de Planeación Democrática y Prospectiva
+            · Instituto de Planeación Democrática y Prospectiva (Consumo Habitacional Promedio)
     </a> 
+    </p>
+    <p style='color:grey; font-size: 15px; margin-bottom:0px;'>
+    <a href="https://datos.cdmx.gob.mx/dataset/alta-concentracion-vivienda-cdmx" target="_blank">
+            · Instituto de Planeación Democrática y Prospectiva (Concentración Habitacional)
     </p>
     """,
     unsafe_allow_html=True
