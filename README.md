@@ -25,7 +25,7 @@ futuro.
 
 ## 📊 Dashboard
 
-🔗 Acceder al (Dashboard)[https://water-analysis-mexico-city.streamlit.app/]
+🔗 Acceder al [Dashboard](https://water-analysis-mexico-city.streamlit.app/)
 📖 Descrito en detalle en este (artículo)[tbd] en Medium.
 
 El dashboard permite:
