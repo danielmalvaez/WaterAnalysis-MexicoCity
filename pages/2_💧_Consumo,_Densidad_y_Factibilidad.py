@@ -641,13 +641,12 @@ with tab3 :
                 "SUM_cons_t": "Consumo total (m³)",
                 "C_PROMVIVC": "Clase (1–5)"
             },
-            title="Consumo Habitacional de Agua en CDMX"
         )
 
         # 4) Estilo fino: bordes, leyenda, márgenes
         fig.update_traces(marker_line_width=0.5, marker_line_color="white")
         fig.update_layout(
-            margin=dict(l=0, r=0, t=50, b=0),
+            margin=dict(l=0, r=0, t=90, b=0),
             height=700,
             legend=dict(
                 title="Nivel de Consumo (1–5)",
@@ -655,7 +654,12 @@ with tab3 :
                 yanchor="bottom", y=0.92,
                 xanchor="left", x=0
             ),
-            title=dict(font=dict(size = 15))
+            title=dict(
+                text="Consumo Habitacional de Agua en CDMX",
+                font=dict(size=18),
+                x=0,           # center the title
+                yanchor="top"
+            )
         )
 
         # Hover limpio
@@ -727,13 +731,12 @@ with tab3 :
             labels={
                 "grado": "Densidad poblacional",
             },
-            title="Densidad Poblacional en CDMX por Colonias"
         )
 
         # 4) Estilo fino: bordes, leyenda, márgenes
         fig.update_traces(marker_line_width=0.5, marker_line_color="white")
         fig.update_layout(
-            margin=dict(l=0, r=0, t=50, b=0),
+            margin=dict(l=0, r=0, t=90, b=0),
             height=700,
             legend=dict(
                 title="Clasificación de la Concentración",
@@ -741,7 +744,12 @@ with tab3 :
                 yanchor="bottom", y=0.82,
                 xanchor="left", x=0
             ),
-            title=dict(font=dict(size = 15))
+            title=dict(
+                text="Densidad Poblacional en CDMX por Colonias",
+                font=dict(size=18),
+                x=0,           # center the title
+                yanchor="top"
+            )
         )
 
         # Hover limpio
@@ -809,13 +817,12 @@ with tab3 :
             labels={
                 "grado": "Densidad poblacional",
             },
-            title="Grado de Factibilidad Hídrica en CDMX"
         )
 
         # 4) Estilo fino: bordes, leyenda, márgenes
         fig.update_traces(marker_line_width=0.1, marker_line_color="black")
         fig.update_layout(
-            margin=dict(l=0, r=0, t=50, b=0),
+            margin=dict(l=0, r=0, t=90, b=0),
             height=700,
             legend=dict(
                 title="Clasificación de la Factibilidad",
@@ -823,7 +830,12 @@ with tab3 :
                 yanchor="bottom", y=0.95,
                 xanchor="left", x=0
             ),
-            title=dict(font=dict(size = 15))
+            title=dict(
+                text="Grado de Factibilidad Hídrica en CDMX",
+                font=dict(size=18),
+                x=0,           # center the title
+                yanchor="top"
+            )
         )
 
         # Hover limpio
