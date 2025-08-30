@@ -740,8 +740,8 @@ with tab3 :
             height=700,
             legend=dict(
                 title="Clasificación de la Concentración",
-                orientation="h",
-                yanchor="bottom", y=0.82,
+                orientation="v",
+                yanchor="bottom", y=0.85,
                 xanchor="left", x=0
             ),
             title=dict(
