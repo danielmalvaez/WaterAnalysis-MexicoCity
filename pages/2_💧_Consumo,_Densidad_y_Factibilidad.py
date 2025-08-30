@@ -529,24 +529,24 @@ with tab2 :
         uniformtext_minsize=12,
     )
 
-    # --- toggle for OLS trend ---
-    show_trend = st.toggle("Mostrar línea de tendencia (OLS)", value=False, key="trend_tab2")
+    # # --- toggle for OLS trend ---
+    # show_trend = st.toggle("Mostrar línea de tendencia (OLS)", value=False, key="trend_tab2")
 
-    # trendline (requires statsmodels installed)
-    if show_trend:
-        # temporary figure with trendline, then merge trace for a clean legend
-        fig_trend = px.scatter(
-            allAgg,
-            x="total_inmuebles",
-            y="consumo_total",
-            trendline="ols",
-            trendline_color_override="grey",
-        )
-        # the OLS line is usually the second trace
-        for tr in fig_trend.data:
-            if tr.mode == "lines":
-                tr.update(name="Tendencia OLS", showlegend=True)
-                fig.add_trace(tr)
+    # # trendline (requires statsmodels installed)
+    # if show_trend:
+    #     # temporary figure with trendline, then merge trace for a clean legend
+    #     fig_trend = px.scatter(
+    #         allAgg,
+    #         x="total_inmuebles",
+    #         y="consumo_total",
+    #         trendline="ols",
+    #         trendline_color_override="grey",
+    #     )
+    #     # the OLS line is usually the second trace
+    #     for tr in fig_trend.data:
+    #         if tr.mode == "lines":
+    #             tr.update(name="Tendencia OLS", showlegend=True)
+    #             fig.add_trace(tr)
 
     # in Streamlit:
     st.plotly_chart(fig, use_container_width=True)
