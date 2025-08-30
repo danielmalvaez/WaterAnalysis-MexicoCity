@@ -26,7 +26,7 @@ futuro.
 ## 📊 Dashboard
 
 🔗 Acceder al [Dashboard](https://water-analysis-mexico-city.streamlit.app/)
-📖 Descrito en detalle en este (artículo)[tbd] en Medium.
+📖 Descrito en detalle en este [artículo](tbd) en Medium.
 
 El dashboard permite:
 * Explorar mapas interactivos de la disponibilidad y consumo de agua.
@@ -50,7 +50,7 @@ streamlit run app.py
 ```
 
 ## 📚 Fuentes de Datos
-* Dataset limpio (Hugging Face): (Water Dashboard Dataset)[https://huggingface.co/datasets/danielmlvz/water-dashboard]
+* Dataset limpio (Hugging Face): [Water Dashboard Dataset](https://huggingface.co/datasets/danielmlvz/water-dashboard)
 * Instituciones: CONAGUA, INEGI, SEDUVI, IPDP (2023).
 * https://cuentame.inegi.org.mx/descubre/conoce_tu_estado/tarjeta.html?estado=09
 * https://www.gob.mx/bancodelbienestar/articulos/693-aniversario-de-la-fundacion-de-mexico-tenochtitlan?idiom=es#:~:text=Sobre%20la%20fecha%20precisa%20de,que%20sucedi%C3%B3%20en%20el%201325.
@@ -69,22 +69,17 @@ streamlit run app.py
 * https://www.economia.gob.mx/datamexico/es/profile/industry/real-estate-and-rental-and-leasing?yearEconomicCensus=option1&yearSelectorGdp=timeOption0#environment
 * https://www.economia.gob.mx/datamexico/es/profile/industry/construction
 
-## 🚀 Roadmap
-* Agregar análisis predictivo de riesgo hídrico.
-* Integrar precios de renta/venta en tiempo real.
-* Extender dataset a otras ciudades mexicanas.
-* Desplegar versión pública en Streamlit Cloud.
-
 ## 📂 Estructura del Repositorio
 
 ```python
 .
-├── data/                # Datasets brutos y procesados
-├── notebooks/           # Jupyter notebooks de análisis exploratorio
-├── src/                 # Código principal para ETL y visualizaciones
-├── app.py               # Dashboard en Streamlit
+├── .devcontainer/       # Configuración del entorno de desarrollo
+├── .streamlit/          # Configuración de Streamlit
+├── pages/               # Código para las diferentes páginas del dashboard
+├── .gitignore           # Archivos y carpetas a ignorar por Git
+├── README.md            # Este documento
 ├── requirements.txt     # Dependencias
-└── README.md            # Este documento
+└── 👋Intro.py           # Dashboard en Streamlit 
 ```
 
 ## 🛡️ Licencia
