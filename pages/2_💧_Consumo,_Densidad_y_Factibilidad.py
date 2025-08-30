@@ -555,16 +555,16 @@ with tab2 :
     # OBSERVATIONS
     # --------------------
 
-    st.markdown("---")
-    st.markdown(
-        """
-        **Observaciones**
-        - Línea de tendencia (método OLS) debe ser utilizada como referencia, 
-        aún no se hacen las pruebas estadísticas suficientes para determinar
-        si los datos cumplen con normalidad e independencia en los errores,
-        homocedasticidad, ect.
-        """
-    )
+    # st.markdown("---")
+    # st.markdown(
+    #     """
+    #     **Observaciones**
+    #     - Línea de tendencia (método OLS) debe ser utilizada como referencia, 
+    #     aún no se hacen las pruebas estadísticas suficientes para determinar
+    #     si los datos cumplen con normalidad e independencia en los errores,
+    #     homocedasticidad, ect.
+    #     """
+    # )
     
 # -----------------------------------------
 #          ENCUENTRA TU COLONIA
