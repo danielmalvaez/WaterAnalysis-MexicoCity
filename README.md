@@ -1,8 +1,6 @@
 # 💧 Escasez de Agua en CDMX 🏙️
 *Impacto en decisiones al rentar o adquirir una propiedad*
 
-----
-
 ## ✨ Motivación
 
 Este proyecto nació como una petición personal de mis padres. Nos dimos cuenta 
