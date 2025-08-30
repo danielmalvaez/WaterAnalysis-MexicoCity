@@ -865,8 +865,8 @@ with tab3 :
         st.markdown(
             f"""
             <div style="text-align: center;">
-                <h4 style="margin-bottom:0;">📊 Ranking de {len(habCons)} colonias, la seleccionada ocupa el puesto número :</h4>
-                <h2 style="margin-top:0;">{habCons[habCons["colonia"] == colonia_sel].index[0] + 1}</h2>
+                <h4 style="margin-bottom:0;">📊 Dentro del ranking de colonias más consumidoras de agua, tú colonia ocupa el puesto :</h4>
+                <h2 style="margin-top:0;">{habCons[habCons["colonia"] == colonia_sel].index[0] + 1} de un total de {len(habCons)} colonias.</h2>
             </div>
             """,
             unsafe_allow_html=True
