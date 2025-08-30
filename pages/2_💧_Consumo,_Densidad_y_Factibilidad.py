@@ -136,8 +136,8 @@ st.set_page_config(
 st.markdown("# Consumo de Agua en la Ciudad de México")
 st.markdown(
     """
-    <p  style='color:grey; font-size:13px;margin-bottom:0px;'>
-        Información disponible a los primeros bimestres del 2019
+    <p  style='color:grey; font-size:13px;margin-bottom:10px;'>
+        Información de consumo disponible por bimestre del año 2019.
     </p>
     """,
     unsafe_allow_html=True
@@ -150,17 +150,17 @@ st.sidebar.markdown("# Consumo y Demanda de Agua en la CDMX")
 # -------------------------------------------
 
 # Add filter
-option = st.selectbox(
-    "Selecciona un bimestre disponible :",
-    ("Febrero", "Abril", "Junio"),
-)
+# option = st.selectbox(
+#     "Selecciona un bimestre disponible :",
+#     ("Febrero", "Abril", "Junio"),
+# )
 
-mappingDate = {"Febrero" : "2019-02-28", 
-            "Abril" : "2019-04-30",
-            "Junio" : "2019-06-30"}
+# mappingDate = {"Febrero" : "2019-02-28", 
+#             "Abril" : "2019-04-30",
+#             "Junio" : "2019-06-30"}
 
 # Filtering using the provided bimester and date by user
-consF = dataConsumo19[dataConsumo19['fecha_referencia'] == mappingDate[option]]
+consF = dataConsumo19[dataConsumo19['fecha_referencia'] == "2019-06-30"]
 
 # Neighborhood aggregation
 consWatAgg = consF.groupby(['colonia', 'alcaldia']).agg({
