@@ -167,5 +167,28 @@ def main() -> None:
         """
         )
     
+    
+    # -----------------------------------------
+    #               REFERENCES
+    # -----------------------------------------
+    st.markdown("---")
+    st.markdown(
+    """
+    <p  style='color:grey; font-size:15px;margin-bottom:0px;'>
+        Fuentes : 
+    </p>
+    <p style='color:grey; font-size:15px;margin-bottom:0px;'>
+        <a href="https://www.gob.mx/bancodelbienestar/articulos/693-aniversario-de-la-fundacion-de-mexico-tenochtitlan?idiom=es#:~:text=Sobre%20la%20fecha%20precisa%20de,que%20sucedió%20en%20el%201325" target="_blank">
+            · Banco del Bienestar, Sociedad Nacional de Crédito, Institución de Banca de Desarrollo
+        </a>
+    </p>
+    <p style='color:grey; font-size:15px;margin-bottom:0px;'>
+    <a href="https://autoridadcentrohistorico.cdmx.gob.mx/centro-historico-de-la-ciudad-de-mexico/conoce-tu-centro-historico" target="_blank">
+            · Autoridad del Centro Histórico de la Ciudad de México
+    </a> 
+    """,
+    unsafe_allow_html=True
+    )
+    
 if __name__ == "__main__":
     main()

@@ -1,38 +1,69 @@
-# Escasez de Agua 💧 y cómo impacta las decisiones al momento de adquirir/rentar una propiedad en Ciudad de México 🏙️
+# 💧 Escasez de Agua en CDMX 🏙️
+*Impacto en decisiones al rentar o adquirir una propiedad*
 
-Mi motivación principal ✨ sobre este proyecto es que nació como una petición de mis padres. Nos dimos cuenta que cada vez que buscábamos rentar o mudarnos de casa, nos gustaba saber no sólo el entorno social 🧑‍🤝‍🧑, la seguridad 🛡️, la cercanía con principales servicios 🏥🛒 o incluso con la familia 👨‍👩‍👧‍👦, sino también nos interesa conocer cuál es la situación del abastecimiento de agua en la colonia (e.g. hay tandas, el lugar tiene cisterna, tinaco, etc).
+----
 
-Es por esto que, motivado por conocer la situación de la disponibilidad del agua en nuestro futuro hogar 🏠, decidí hacer este proyecto, el cual busca brindar una mayor visibilidad del problema actual en CDMX 🚰 y a su vez otorgar una herramienta 🧰 a todas aquellas personas que busquen cambiar de departamento, casa o vivienda, y así puedan tomar una decisión más informada 📊 (además de claro, generar conciencia sobre el uso responsable de este recurso tan preciado 🌎).
+## ✨ Motivación
 
+Este proyecto nació como una petición personal de mis padres. Nos dimos cuenta 
+que cada vez que buscábamos rentar o mudarnos de casa, además de considerar:
+* Entorno social 🧑‍🤝‍🧑
+* Seguridad 🛡️
+* Cercanía a servicios 🏥🛒
+* Proximidad con familia 👨‍👩‍👧‍👦
 
-Mi **motivación principal** sobre este proyecto es que nació como una petición de mis padres. Nos dimos cuenta que cada vez que buscabamos rentar o mudarnos de casa, nos gustaba saber no sólo el entorno social, la seguridad, la cercanía con principales servicios o incluso cercanía con la familia, sino también nos gusta saber cuál es la situación del abastecimiento de agua en la colonia (e.g. hay tandes, el lugar tiene cisterna, tinaco, etc). Es por esto que motivado por conocer la situación de la disponibilidad del agua en nuestro futuro hogar, decidí hacer este proyecto el cuál busca brindar una mayor visibilidad del problema actual en CDMX y a su vez otorgar una herramienta a todas aquellas personas que busquen cambiar de departamento, casa o vivienda y puedan tomar una decisión más informada (*además de claro generar conciencia sobre el uso responsable de este recurso tan preciado*).
+siempre surgía la pregunta: ¿cómo está el abastecimiento de agua en la colonia? 🚰
+* tandeos
+* cisterna
+* tinaco
+
+Con el objetivo de tener mayor visibilidad sobre este problema en Ciudad de México, desarrollé este proyecto para:
+* Brindar una herramienta de apoyo 🧰 en cuanto a la disponibilidad de agua
+port colonia.
+* Permitir decisiones más informadas 📊 y preveer sobre el impacto de agua a 
+futuro.
+* Generar conciencia sobre el uso responsable del agua 🌎.
+
 
 ## 📊 Dashboard
-Este repositorio guarda el código y la implementación del [Dashboard](linktobedetermined) que presento en mi [Medium report](linktobedetermined).
 
-## ⚙️ Pre-requisitos
-* Python libraries :
-    * geopandas
-    * plotly
-    * shapely.geometry
-    * squarify
-    * huggingface_hub
+🔗 Acceder al (Dashboard)[https://water-analysis-mexico-city.streamlit.app/]
+📖 Descrito en detalle en este (artículo)[tbd] en Medium.
 
-## 🧭 ¿Cómo usar el dashboard?
+El dashboard permite:
+* Explorar mapas interactivos de la disponibilidad y consumo de agua.
+* Visualizar la factibilidad hídrica por colonia.
+* Encontrar tu colonia y ver su situación de agua.
 
-## **📚 Data Sources & Support References**
+## ⚙️ Instalación Local
 
-* Hugging Face Hub: [Cleaned Datasets for Dashboard](https://huggingface.co/datasets/danielmlvz/water-dashboard)
-* Comisión Nacional del Agua (CONAGUA). (2023). Informe sobre la disponibilidad de agua en Ciudad de México.
-* Instituto Nacional de Estadística y Geografía (INEGI). (2023). Estadísticas del mercado inmobiliario en Ciudad de México.
-* Secretaría de Desarrollo Urbano y Vivienda (SEDUVI). (2023). Plan de Desarrollo Urbano de Ciudad de México.
-* Expertos en sostenibilidad hídrica y desarrollo urbano, entrevistas realizadas en 2024.
-* Estudios de caso sobre desarrollos inmobiliarios sostenibles en áreas afectadas por la escasez de agua, incluyendo análisis de precios y estrategias implementadas.
-* Encuestas a residentes sobre la percepción del valor de las propiedades en relación con la disponibilidad de agua, realizadas en 2024.
-* Artículos académicos y reportes sobre el impacto de la escasez de agua en el mercado inmobiliario, incluyendo análisis de tendencias y patrones en diferentes ciudades del mundo.
-* Informes de organizaciones no gubernamentales y grupos de investigación sobre la crisis hídrica en Ciudad de México y su impacto en las comunidades y el desarrollo urbano.
+Clona este repositorio e instala las dependencias:
+
+```python
+git clone https://github.com/usuario/repo.git
+cd repo
+pip install -r requirements.txt
+```
+
+Ejecuta el dashboard en Streamlit:
+
+```python
+streamlit run app.py
+```
+
+## 📚 Fuentes de Datos
+* Dataset limpio (Hugging Face): (Water Dashboard Dataset)[https://huggingface.co/datasets/danielmlvz/water-dashboard]
+* Instituciones: CONAGUA, INEGI, SEDUVI, IPDP (2023).
 * https://cuentame.inegi.org.mx/descubre/conoce_tu_estado/tarjeta.html?estado=09
-* https://www.inegi.org.mx/contenidos/saladeprensa/boletines/2024/PIBEF/PIBEF2023.pdf
+* https://www.gob.mx/bancodelbienestar/articulos/693-aniversario-de-la-fundacion-de-mexico-tenochtitlan?idiom=es#:~:text=Sobre%20la%20fecha%20precisa%20de,que%20sucedi%C3%B3%20en%20el%201325.
+* https://autoridadcentrohistorico.cdmx.gob.mx/centro-historico-de-la-ciudad-de-mexico/conoce-tu-centro-historico
+* https://historico.datos.gob.mx/busca/dataset/municipios-con-sequia
+* https://datos.cdmx.gob.mx/ne/dataset/consumo-agua
+* https://datos.cdmx.gob.mx/dataset/consumo-habitacional-promedio-bimestral-de-agua-por-colonia-m3
+* https://datos.cdmx.gob.mx/dataset/alta-concentracion-vivienda-cdmx
+* https://datos.cdmx.gob.mx/sv/dataset/reportes-de-agua
+
+## Links útiles:
 * https://periodicocorreo.com.mx/nacional/2025/jul/01/sistema-cutzamala-supera-minimos-historicos-y-sale-de-crisis-hidrica-tras-intensas-lluvias-131693.html
 * https://www.smithsonianmag.com/smart-news/mexico-citys-reservoirs-are-at-risk-of-running-out-of-water-180984433/?utm_source=chatgpt.com
 * https://www.reuters.com/sustainability/boards-policy-regulation/mexicos-water-deficit-persists-even-after-torrential-summer-rains-2025-07-03/?utm_source=chatgpt.com
@@ -40,11 +71,24 @@ Este repositorio guarda el código y la implementación del [Dashboard](linktobe
 * https://www.economia.gob.mx/datamexico/es/profile/industry/real-estate-and-rental-and-leasing?yearEconomicCensus=option1&yearSelectorGdp=timeOption0#environment
 * https://www.economia.gob.mx/datamexico/es/profile/industry/construction
 
-An eye now on : 
-* https://www.smithsonianmag.com/smart-news/mexico-citys-reservoirs-are-at-risk-of-running-out-of-water-180984433/?utm_source=chatgpt.com
-* https://realestatemarket.com.mx/noticias/mercado-inmobiliario/48609-el-mercado-inmobiliario-de-cdmx-enfrenta-escasez-y-presion-de-precios
-* https://blog.streamlit.io/crafting-a-dashboard-app-in-python-using-streamlit/
-* https://www.youtube.com/watch?v=yg0Y7w4AHhw
-* https://shields.io/
-* https://www.gob.mx/bancodelbienestar/articulos/693-aniversario-de-la-fundacion-de-mexico-tenochtitlan?idiom=es#:~:text=Sobre%20la%20fecha%20precisa%20de,que%20sucedi%C3%B3%20en%20el%201325.
-* https://autoridadcentrohistorico.cdmx.gob.mx/centro-historico-de-la-ciudad-de-mexico/conoce-tu-centro-historico
+## 🚀 Roadmap
+* Agregar análisis predictivo de riesgo hídrico.
+* Integrar precios de renta/venta en tiempo real.
+* Extender dataset a otras ciudades mexicanas.
+* Desplegar versión pública en Streamlit Cloud.
+
+## 📂 Estructura del Repositorio
+
+```python
+.
+├── data/                # Datasets brutos y procesados
+├── notebooks/           # Jupyter notebooks de análisis exploratorio
+├── src/                 # Código principal para ETL y visualizaciones
+├── app.py               # Dashboard en Streamlit
+├── requirements.txt     # Dependencias
+└── README.md            # Este documento
+```
+
+## 🛡️ Licencia
+
+Este proyecto está bajo la licencia MIT.
