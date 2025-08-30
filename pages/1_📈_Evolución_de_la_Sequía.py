@@ -131,26 +131,15 @@ st.markdown("# Sequía en la Ciudad de México")
 st.sidebar.markdown("# Time series y Mapas de Sequía/Escasez")
 
 t1, t2 = st.tabs([
-    "🏞️ Niveles del Cutzamala",
-    "🌵 Evolución Sequía"
+    "🌵 Evolución Sequía",
+    "🏞️ Niveles del Cutzamala"
     ])
-
-
-# ----------------------------------------
-#  TAB1 : Prediccion niveles del Cutzamala
-# ----------------------------------------
-
-with t1 : 
-    # plot something here
-    st.write("WIP")
-
-
 
 # ----------------------------------------
 #  TAB2 : Evolucion de Sequia
 # ----------------------------------------
 
-with t2 : 
+with t1 : 
 
     selected_range = st.slider(
     "Selecciona un rango de años",
@@ -307,3 +296,11 @@ with t2 :
         sanamente en *Sin Sequía*.
         """
     )
+    
+# ----------------------------------------
+#  TAB1 : Prediccion niveles del Cutzamala
+# ----------------------------------------
+
+with t2 : 
+    # plot something here
+    st.write("Coming soon...")

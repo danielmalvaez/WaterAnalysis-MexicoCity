@@ -301,7 +301,7 @@ with col1Reportes :
     # 4) Layout tweaks: equal aspect, subtle grid, margins, title
     fig.update_layout(
         title=dict(
-            text="Reportes de Falta de Agua 2022",
+            text="Zonas con más reportes de falta de agua - 2022",
             x=0.02, xanchor='left', y=0.98
         ),
         width=900, height=1000,
@@ -445,7 +445,7 @@ with col2Reportes :
     # 4) Layout tweaks: equal aspect, subtle grid, margins, title
     fig.update_layout(
         title=dict(
-            text="Reportes de Falta de Agua 2024",
+            text="Zonas con más reportes de falta de agua - 2024",
             x=0.02, xanchor='left', y=0.98
         ),
         width=900, height=1000,

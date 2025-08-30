@@ -658,7 +658,7 @@ with tab3 :
                 "SUM_cons_t": "Consumo total (m³)",
                 "C_PROMVIVC": "Clase (1–5)"
             },
-            title="Consumo Promedio Habitacional de Agua en Ciudad de México (cuantiles 1–5)"
+            title="Consumo Habitacional de Agua en CDMX"
         )
 
         # 4) Estilo fino: bordes, leyenda, márgenes
@@ -671,7 +671,8 @@ with tab3 :
                 orientation="h",
                 yanchor="bottom", y=0.92,
                 xanchor="left", x=0
-            )
+            ),
+            title=dict(font=dict(size = 15))
         )
 
         # Hover limpio
@@ -743,7 +744,7 @@ with tab3 :
             labels={
                 "grado": "Densidad poblacional",
             },
-            title="Densidad Poblacional en Ciudad de México por Colonias"
+            title="Densidad Poblacional en CDMX por Colonias"
         )
 
         # 4) Estilo fino: bordes, leyenda, márgenes
@@ -754,9 +755,10 @@ with tab3 :
             legend=dict(
                 title="Clasificación de la Concentración",
                 orientation="h",
-                yanchor="bottom", y=0.92,
+                yanchor="bottom", y=0.82,
                 xanchor="left", x=0
-            )
+            ),
+            title=dict(font=dict(size = 15))
         )
 
         # Hover limpio
@@ -824,7 +826,7 @@ with tab3 :
             labels={
                 "grado": "Densidad poblacional",
             },
-            title="Grado de Factibilidad Hídrica en Ciudad de México"
+            title="Grado de Factibilidad Hídrica en CDMX"
         )
 
         # 4) Estilo fino: bordes, leyenda, márgenes
@@ -835,9 +837,10 @@ with tab3 :
             legend=dict(
                 title="Clasificación de la Factibilidad",
                 orientation="h",
-                yanchor="bottom", y=0.92,
+                yanchor="bottom", y=0.95,
                 xanchor="left", x=0
-            )
+            ),
+            title=dict(font=dict(size = 15))
         )
 
         # Hover limpio
@@ -857,12 +860,11 @@ with tab3 :
             🟨 Amarillo -> Zonas con buena capacidad, pero con algunas limitaciones<br>
             🟧 Naranja -> Zonas con capacidad limitada para mitigar riesgo<br>
             🟥 Rojo -> Zonas con poca o nula capacidad para mitigar riesgo<br>
-            <b>Geospatial Join</b>: se unieron dos datasets para mantener los nombres de colonias consistentes en este mapa, si encuentras alguna discrepancia mándame un mensaje.<br>
             </div>
             """,
             unsafe_allow_html=True
         )    
-        
+                
     if colonia_sel != "(Todas)" : 
         # Wrap metric in a centered div
         st.markdown(
@@ -874,7 +876,17 @@ with tab3 :
             """,
             unsafe_allow_html=True
         )
-    
+
+    st.markdown("---")
+    st.markdown(
+        f"""
+        <p font-size:12px;>
+        <b>Geospatial Join</b>: se unieron dos datasets para mantener los nombres de colonias consistentes en este mapa, si encuentras alguna discrepancia mándame un mensaje.<br>
+        </p>
+        """,
+        unsafe_allow_html=True
+    )
+
 # -----------------------------------------
 #               REFERENCES
 # -----------------------------------------
