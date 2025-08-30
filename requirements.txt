@@ -1,3 +1,10 @@
 pandas
+numpy
+warnings
+geopandas
+scipy
+plotly
 duckdb
 huggingface_hub
+shapely
+textwrap

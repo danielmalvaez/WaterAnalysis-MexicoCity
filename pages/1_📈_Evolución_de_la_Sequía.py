@@ -17,28 +17,14 @@ import streamlit as st
 # --------------------
 # Data management
 import pandas as pd
-import numpy as np
 import json
 # Treemap visualization
-import squarify
-from shapely.geometry import Point
-import seaborn as sns
-import plotly.graph_objects as go
-import matplotlib.pyplot as plt
 import plotly.express as px # Interactive
-from matplotlib import cm
-from matplotlib.colors import Normalize, to_hex
 # To make spatial data
-from scipy.spatial import cKDTree
 import geopandas as gpd
-# No accents
-import unicodedata
-# Provide a running estimate
-from tqdm import tqdm
 
 import duckdb
 from huggingface_hub import hf_hub_url
-from shapely.geometry import Polygon, MultiPolygon
 
 # Configure warnings to keep the output clean.
 warnings.filterwarnings("ignore")
